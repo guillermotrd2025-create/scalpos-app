@@ -1,0 +1,222 @@
+@import "tailwindcss";
+
+/* ── Design Tokens ──────────────────────────────────────── */
+:root {
+  --bg-base:       #09090b;   /* zinc-950 */
+  --bg-surface:    #18181b;   /* zinc-900 */
+  --bg-elevated:   #27272a;   /* zinc-800 */
+  --bg-muted:      #3f3f46;   /* zinc-700 */
+
+  --border:        rgba(255,255,255,0.07);
+  --border-focus:  rgba(255,255,255,0.18);
+
+  --text-primary:  #f4f4f5;   /* zinc-100 */
+  --text-secondary:#a1a1aa;   /* zinc-400 */
+  --text-muted:    #71717a;   /* zinc-500 */
+
+  /* Accent: only for discipline/PnL signals */
+  --green:         #22c55e;
+  --green-dim:     rgba(34,197,94,0.12);
+  --red:           #ef4444;
+  --red-dim:       rgba(239,68,68,0.12);
+  --amber:         #f59e0b;
+  --amber-dim:     rgba(245,158,11,0.12);
+  --blue:          #3b82f6;
+  --blue-dim:      rgba(59,130,246,0.10);
+
+  /* Brand */
+  --brand:         #6366f1;   /* indigo-500 */
+  --brand-dim:     rgba(99,102,241,0.15);
+
+  --font-mono:     "JetBrains Mono", "Fira Code", monospace;
+}
+
+/* ── Base ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { font-size: 15px; }
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-muted); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+/* ── Typography ─────────────────────────────────────────── */
+h1, h2, h3, h4 { font-weight: 600; letter-spacing: -0.02em; }
+
+/* ── Card surface ───────────────────────────────────────── */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.card-elevated {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* ── Stat chip ──────────────────────────────────────────── */
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* ── Glow ring ──────────────────────────────────────────── */
+.ring-green   { box-shadow: 0 0 0 1px rgba(34,197,94,0.35); }
+.ring-red     { box-shadow: 0 0 0 1px rgba(239,68,68,0.35); }
+.ring-amber   { box-shadow: 0 0 0 1px rgba(245,158,11,0.35); }
+.ring-brand   { box-shadow: 0 0 0 1px rgba(99,102,241,0.35); }
+
+/* ── PnL text ───────────────────────────────────────────── */
+.pnl-positive { color: var(--green);  }
+.pnl-negative { color: var(--red);    }
+.pnl-neutral  { color: var(--text-muted); }
+
+/* ── Form inputs ──────────────────────────────────────────*/
+.input {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+.input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+.input::placeholder { color: var(--text-muted); }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--brand);
+  color: #fff;
+}
+.btn-primary:hover { background: #4f51d9; box-shadow: 0 0 0 3px var(--brand-dim); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+.btn-ghost:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+.btn-danger {
+  background: var(--red-dim);
+  color: var(--red);
+  border-color: rgba(239,68,68,0.3);
+}
+.btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+.btn-success {
+  background: var(--green-dim);
+  color: var(--green);
+  border-color: rgba(34,197,94,0.3);
+}
+.btn-success:hover { background: rgba(34,197,94,0.2); }
+
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Badge ──────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* ── Divider ─────────────────────────────────────────────── */
+.divider { height: 1px; background: var(--border); }
+
+/* ── Semaphore colours ───────────────────────────────────── */
+.semaphore-green  { background: var(--green-dim); border: 1px solid rgba(34,197,94,0.3); }
+.semaphore-amber  { background: var(--amber-dim); border: 1px solid rgba(245,158,11,0.3); }
+.semaphore-red    {
+  background: var(--red-dim);
+  border: 1px solid rgba(239,68,68,0.45);
+  animation: pulse-red 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  50%       { box-shadow: 0 0 20px 4px rgba(239,68,68,0.25); }
+}
+
+/* ── Animations ─────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in  { animation: fadeIn  0.25s ease forwards; }
+.animate-scale-in { animation: scaleIn 0.2s  ease forwards; }
+
+/* ── Modal overlay ───────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 480px;
+  width: 90%;
+  animation: scaleIn 0.2s ease;
+}
+
+/* ── Recharts overrides ──────────────────────────────────── */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--border) !important;
+}
+.recharts-text { fill: var(--text-muted) !important; font-size: 11px !important; }
+.recharts-tooltip-wrapper { filter: drop-shadow(0 4px 24px rgba(0,0,0,0.6)); }

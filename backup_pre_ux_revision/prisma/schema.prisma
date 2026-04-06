@@ -1,0 +1,188 @@
+// ============================================================
+// ScalpOS - Trading Journal Schema
+// SQLite via Prisma ORM
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// SESSION: Represents a trading day/session
+// ============================================================
+model Session {
+  id               Int      @id @default(autoincrement())
+  date             DateTime @default(now())
+  start_time       DateTime
+  end_time         DateTime?
+
+  // Post-vuelo checklist
+  checklist_passed Boolean  @default(false)
+
+  // Financials
+  total_pnl        Float    @default(0)
+  
+  // Discipline metrics (0-100)
+  discipline_score Int      @default(100)
+  
+  // Emotional/Mental state at session start
+  // Values: A_GAME | B_GAME | C_GAME
+  mental_state     String   @default("A_GAME")
+  
+  // Post-session written conclusion (mandatory to close session)
+  notes            String?
+  conclusion       String?
+  is_closed        Boolean  @default(false)
+
+  // Timestamps
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  // Relations
+  trades           Trade[]
+  dodged_bullets   DodgedBullet[]
+}
+
+// ============================================================
+// ACCOUNT: Trading Accounts (Round-Robin)
+// ============================================================
+model Account {
+  id              Int      @id @default(autoincrement())
+  name            String
+  initial_balance Float    @default(10000)
+  current_balance Float    @default(10000)
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  trades          Trade[]
+}
+
+// ============================================================
+// TRADE: Individual trade record
+// ============================================================
+model Trade {
+  id              Int      @id @default(autoincrement())
+  session_id      Int
+  account_id      Int
+  
+  // Timing
+  time            DateTime @default(now())
+  
+  // Instrument
+  asset           String   @default("DAX")
+  
+  // Direction: LONG | SHORT
+  direction       String
+  
+  // Setup classification (e.g. "BOS+Retest EMA9", "FVG+OB", "VWAP Bounce")
+  setup_type      String   @default("Manual")
+  
+  // Risk / Reward
+  rr_planned      Float    @default(1.0)
+  entry_price     Float?
+  sl_price        Float?
+  tp_price        Float?
+  
+  // Result
+  result_pnl      Float    @default(0)
+  
+  // Psychotrading & Strategy features
+  setup_a_passed  Boolean  @default(false)
+  risk_accepted   Boolean  @default(false)
+  execution_score Int?     // 1 to 10
+  
+  // Screenshots (relative paths to /public/uploads/screenshots/)
+  screenshot_pre  String?
+  screenshot_post String?
+  
+  // Was this trade part of the pre-session plan?
+  is_in_plan      Boolean  @default(true)
+  
+  // Quick notes
+  notes           String?
+  
+  // Timestamps
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  session         Session          @relation(fields: [session_id], references: [id], onDelete: Cascade)
+  account         Account          @relation(fields: [account_id], references: [id])
+  checklist       PreTradeChecklist?
+  mistakes        Mistake[]
+}
+
+// ============================================================
+// PRE-TRADE CHECKLIST: Behavioral gate before entering a trade
+// All booleans must be answered before the trade can be logged
+// ============================================================
+model PreTradeChecklist {
+  id                   Int     @id @default(autoincrement())
+  trade_id             Int     @unique
+
+  // RED FLAGS (if true → modal warning fires)
+  has_fomo             Boolean @default(false)   // "Estoy entrando por miedo a perderme el movimiento"
+  is_extended          Boolean @default(false)   // "El precio ya recorrió demasiado, está extendido"
+  is_chasing           Boolean @default(false)   // "Estoy persiguiendo la vela"
+  is_revenge_trade     Boolean @default(false)   // "Estoy operando para recuperar pérdidas"
+
+  // GREEN FLAGS (must be true for a valid trade)
+  has_confirmation     Boolean @default(false)   // "Tengo confirmación de estructura/momentum"
+  is_correct_session   Boolean @default(false)   // "Estoy en horario de alta liquidez (XETRA/London overlap)"
+  has_clear_sl         Boolean @default(false)   // "Tengo Stop Loss definido antes de entrar"
+  follows_higher_tf    Boolean @default(false)   // "Alineado con la tendencia en TF superior"
+
+  // Computed risk score (0 = clean, higher = riskier)
+  risk_score           Int     @default(0)
+
+  // Timestamps
+  created_at           DateTime @default(now())
+
+  // Relations
+  trade                Trade   @relation(fields: [trade_id], references: [id], onDelete: Cascade)
+}
+
+// ============================================================
+// MISTAKE: Tagged behavioral errors per trade
+// A trade can have multiple mistake tags
+// ============================================================
+model Mistake {
+  id           Int    @id @default(autoincrement())
+  trade_id     Int
+
+  // Mistake type enum (stored as string for SQLite compatibility)
+  // Values: FOMO | REVENGE | CHASING | OVERTRADING | BOREDOM | EARLY_EXIT | LATE_ENTRY | NO_SL | MOVED_SL
+  mistake_type String
+
+  // How many discipline points this mistake costs (1-20)
+  penalty_score Int    @default(5)
+
+  // Optional note about this specific mistake
+  note         String?
+
+  // Timestamps
+  created_at   DateTime @default(now())
+
+  // Relations
+  trade        Trade  @relation(fields: [trade_id], references: [id], onDelete: Cascade)
+}
+
+// ============================================================
+// DODGED BULLET: Rewarding discipline
+// ============================================================
+model DodgedBullet {
+  id           Int      @id @default(autoincrement())
+  session_id   Int
+  time         DateTime @default(now())
+  reason       String?  // Why did you avoid taking the trade?
+  
+  // Relations
+  session      Session  @relation(fields: [session_id], references: [id], onDelete: Cascade)
+}

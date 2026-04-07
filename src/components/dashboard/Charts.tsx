@@ -15,6 +15,23 @@ type SessionRow = {
   trades: { mistakes: { mistake_type: string; penalty_score: number }[] }[];
 };
 
+const DisciplinePnlTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="card p-3 text-xs min-w-[140px]" style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
+      <p className="font-semibold mb-2" style={{ color: "var(--text-primary)" }}>{label}</p>
+      {payload.map((p: any) => (
+        <div key={p.name} className="flex justify-between gap-4 mb-1">
+          <span style={{ color: "var(--text-muted)" }}>{p.name}</span>
+          <span style={{ color: p.fill ?? p.color }} className="font-mono font-semibold">
+            {p.name === "PnL" ? formatPnl(p.value) : p.value}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export function DisciplinePnlChart({ sessions }: { sessions: SessionRow[] }) {
   const data = [...sessions]
     .reverse()
@@ -29,22 +46,7 @@ export function DisciplinePnlChart({ sessions }: { sessions: SessionRow[] }) {
         .reduce((acc, m) => acc + Math.abs(m.penalty_score), 0),
     }));
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (!active || !payload?.length) return null;
-    return (
-      <div className="card p-3 text-xs min-w-[140px]" style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
-        <p className="font-semibold mb-2" style={{ color: "var(--text-primary)" }}>{label}</p>
-        {payload.map((p: any) => (
-          <div key={p.name} className="flex justify-between gap-4 mb-1">
-            <span style={{ color: "var(--text-muted)" }}>{p.name}</span>
-            <span style={{ color: p.fill ?? p.color }} className="font-mono font-semibold">
-              {p.name === "PnL" ? formatPnl(p.value) : p.value}
-            </span>
-          </div>
-        ))}
-      </div>
-    );
-  };
+
 
   return (
     <ResponsiveContainer width="100%" height={220}>
@@ -53,7 +55,7 @@ export function DisciplinePnlChart({ sessions }: { sessions: SessionRow[] }) {
         <XAxis dataKey="date" tick={{ fontSize: 10 }} />
         <YAxis yAxisId="pnl"   orientation="left"  tick={{ fontSize: 10 }} />
         <YAxis yAxisId="disc"  orientation="right" tick={{ fontSize: 10 }} domain={[0,100]} />
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip content={<DisciplinePnlTooltip />} />
         <ReferenceLine yAxisId="pnl" y={0} stroke="rgba(255,255,255,0.15)" />
         <Bar yAxisId="pnl" dataKey="pnl" name="PnL" radius={[4,4,0,0]}>
           {data.map((d, i) => (
@@ -70,21 +72,26 @@ export function DisciplinePnlChart({ sessions }: { sessions: SessionRow[] }) {
 type TradeRow = { time: Date | string; result_pnl: number; is_in_plan: boolean };
 
 export function CumulativePnlChart({ trades }: { trades: TradeRow[] }) {
-  let cum = 0;
-  let cumPlan = 0;
-  let cumFomo = 0;
+  const data = [...trades].reverse().reduce((acc, t, i) => {
+    const prevCum = acc.length > 0 ? acc[acc.length - 1].rawAll : 0;
+    const prevPlan = acc.length > 0 ? acc[acc.length - 1].rawPlan : 0;
+    const prevFomo = acc.length > 0 ? acc[acc.length - 1].rawFomo : 0;
 
-  const data = [...trades].reverse().map((t, i) => {
-    cum     += t.result_pnl;
-    if (t.is_in_plan) cumPlan += t.result_pnl;
-    else              cumFomo += t.result_pnl;
-    return {
-      i:    i + 1,
-      all:  +cum.toFixed(2),
-      plan: +cumPlan.toFixed(2),
-      fomo: +cumFomo.toFixed(2),
-    };
-  });
+    const currentCum = prevCum + t.result_pnl;
+    const currentPlan = prevPlan + (t.is_in_plan ? t.result_pnl : 0);
+    const currentFomo = prevFomo + (!t.is_in_plan ? t.result_pnl : 0);
+
+    acc.push({
+      i: i + 1,
+      all: +currentCum.toFixed(2),
+      plan: +currentPlan.toFixed(2),
+      fomo: +currentFomo.toFixed(2),
+      rawAll: currentCum,
+      rawPlan: currentPlan,
+      rawFomo: currentFomo
+    });
+    return acc;
+  }, [] as any[]);
 
   return (
     <ResponsiveContainer width="100%" height={200}>

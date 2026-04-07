@@ -266,7 +266,7 @@ export default function SettingsManager({
               Esta acción es <strong>IRREVERSIBLE</strong>. Se borrarán permanentemente todos tus trades, sesiones mapeadas, errores y puntuaciones. Las cuentas de fondeo se resetearán a su balance inicial.
             </p>
             <div className="p-4 rounded-lg bg-zinc-950/50 border border-red-500/20 mb-4">
-              <label className="text-xs text-white/50 mb-2 block">Escribe "RESET" para confirmar</label>
+              <label className="text-xs text-white/50 mb-2 block">Escribe &quot;RESET&quot; para confirmar</label>
               <input 
                 type="text" 
                 className="input w-full font-mono text-center text-red-400 bg-transparent border-red-500/50" 

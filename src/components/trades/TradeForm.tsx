@@ -154,12 +154,13 @@ function UploadZone({
     setUploading(false);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files[0];
     if (file) handleFile(file);
-  }, []);
+  }, [handleFile]);
 
   return (
     <div>
@@ -690,8 +691,8 @@ export default function NewTradeForm({
                     Filosofía de Mark Douglas (Obligatorio)
                   </p>
                   <p className="text-[11px] leading-relaxed mt-1" style={{ color: "var(--text-muted)" }}>
-                    "Acepto que este trade es solo una probabilidad. No sé ni necesito saber qué va a pasar para ganar dinero. Estoy 100% en paz si este trade toca mi SL de{" "}
-                    <strong style={{ color: "var(--text-secondary)" }}>{accountInfo?.maxRiskAmount.toFixed(0) ?? "50"}€</strong>."
+                    {"\"Acepto que este trade es solo una probabilidad. No sé ni necesito saber qué va a pasar para ganar dinero. Estoy 100% en paz si este trade toca mi SL de "}
+                    <strong style={{ color: "var(--text-secondary)" }}>{accountInfo?.maxRiskAmount.toFixed(0) ?? "50"}€</strong>{".\""}
                   </p>
                 </div>
               </label>

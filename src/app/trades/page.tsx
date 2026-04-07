@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getTrades } from "@/app/actions/trades";
 import Link from "next/link";
 import {

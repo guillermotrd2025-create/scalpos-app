@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getSessions, createSession } from "@/app/actions/sessions";
 import Link from "next/link";
 import { formatDate, formatTime, formatPnl, getDisciplineColor, getDisciplineLabel } from "@/lib/utils";

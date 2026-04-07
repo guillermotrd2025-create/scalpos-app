@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getSession } from "@/app/actions/sessions";
 import { notFound } from "next/navigation";
 import {

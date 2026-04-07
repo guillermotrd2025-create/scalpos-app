@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getDashboardStats, getTodaySession } from "@/app/actions/sessions";
 import { getTrades } from "@/app/actions/trades";
 import {

@@ -2,6 +2,8 @@ import { getTrades } from "@/app/actions/trades";
 import GalleryGrid from "@/components/gallery/GalleryGrid";
 import { Image as ImageIcon } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = { title: "Galería de Trades — ScalpOS" };
 
 export default async function GalleryPage() {

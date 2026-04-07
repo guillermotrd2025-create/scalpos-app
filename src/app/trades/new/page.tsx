@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import TradeForm from "@/components/trades/TradeForm";
 import { getTodaySession } from "@/app/actions/sessions";
 import { getSettings } from "@/app/actions/settings";

@@ -44,3 +44,5 @@ next-env.d.ts
 
 # backups
 backup_pre_ux_revision/
+backup/
+*.bak

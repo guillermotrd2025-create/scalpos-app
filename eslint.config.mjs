@@ -13,6 +13,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "backup_pre_ux_revision/**",
+    "backup/**",
+    "**/*.bak/**",
   ]),
 ]);
 

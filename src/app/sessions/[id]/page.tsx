@@ -41,11 +41,11 @@ export default async function SessionDetailPage({
             </span>
             <span className="badge text-xs"
                   style={{
-                    color: session.emotional_state === "FOCUSED" || session.emotional_state === "CALM"
+                    color: session.mental_state === "A_GAME" || session.mental_state === "B_GAME"
                       ? "var(--green)" : "var(--amber)",
                     background: "var(--bg-elevated)",
                   }}>
-              {session.emotional_state}
+              {session.mental_state}
             </span>
           </div>
         </div>

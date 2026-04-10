@@ -95,51 +95,57 @@ export async function deleteAccount(id: number) {
 
 // ── Determine which account must be used next (Round Robin) ──
 export async function getNextAccountToUse() {
-  const stats = await getAccountsStatus();
-  
-  if (stats.length === 0) throw new Error("No hay cuentas activas.");
-
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
-
-  // Get the very last trade of the day to see which account was used
-  const lastTrade = await prisma.trade.findFirst({
-    where: { time: { gte: startOfDay } },
-    orderBy: { time: 'desc' },
-    select: { account_id: true }
-  });
-
-  let nextAccountId = null;
-
-  if (!lastTrade) {
-    // If no trades today, pick the first available
-    const available = stats.find((a: any) => !a.isBlockedToday);
-    if (!available) throw new Error("Estás bloqueado: Has agotado los trades o superado la pérdida diaria (%) en todas las cuentas. Vuelve mañana.");
-    nextAccountId = available.id;
-  } else {
-    // Round robin logic: Find the next account in the list after the last trade's account
-    const lastAccIndex = stats.findIndex((a: any) => a.id === lastTrade.account_id);
+  try {
+    const stats = await getAccountsStatus();
     
-    // Try checking subsequent accounts up to the current one
-    for (let i = 1; i <= stats.length; i++) {
-        const checkIndex = (lastAccIndex + i) % stats.length;
-        if (!stats[checkIndex].isBlockedToday) {
-            nextAccountId = stats[checkIndex].id;
-            break;
-        }
+    if (stats.length === 0) return { error: "No hay cuentas activas." };
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    // Get the very last trade of the day to see which account was used
+    const lastTrade = await prisma.trade.findFirst({
+      where: { time: { gte: startOfDay } },
+      orderBy: { time: 'desc' },
+      select: { account_id: true }
+    });
+
+    let nextAccountId = null;
+
+    if (!lastTrade) {
+      // If no trades today, pick the first available
+      const available = stats.find((a: any) => !a.isBlockedToday);
+      if (!available) return { error: "Estás bloqueado: Has agotado los trades o superado la pérdida diaria (%) en todas las cuentas. Vuelve mañana." };
+      nextAccountId = available.id;
+    } else {
+      // Round robin logic: Find the next account in the list after the last trade's account
+      const lastAccIndex = stats.findIndex((a: any) => a.id === lastTrade.account_id);
+      
+      // Try checking subsequent accounts up to the current one
+      for (let i = 1; i <= stats.length; i++) {
+          const checkIndex = (lastAccIndex + i) % stats.length;
+          if (!stats[checkIndex].isBlockedToday) {
+              nextAccountId = stats[checkIndex].id;
+              break;
+          }
+      }
+      
+      if (nextAccountId === null) {
+          return { error: "Estás bloqueado: Has agotado los trades o superado la pérdida diaria (%) en todas las cuentas. Vuelve mañana." };
+      }
     }
-    
-    if (nextAccountId === null) {
-        throw new Error("Estás bloqueado: Has agotado los trades o superado la pérdida diaria (%) en todas las cuentas. Vuelve mañana.");
-    }
+
+    const selectedAccount = stats.find((a: any) => a.id === nextAccountId);
+    if (!selectedAccount) return { error: "No se ha podido encontrar la cuenta seleccionada." };
+
+    return {
+      account_id: selectedAccount.id,
+      name: selectedAccount.name,
+      maxRiskAmount: selectedAccount.dailyRiskLimit
+    };
+  } catch (err: any) {
+    console.error("[ACCOUNTS ERROR]", err);
+    return { error: "Error de base de datos o de configuración al recuperar la cuenta." };
   }
-
-  const selectedAccount = stats.find((a: any) => a.id === nextAccountId);
-  if (!selectedAccount) throw new Error("No se ha podido encontrar la cuenta seleccionada.");
-
-  return {
-    account_id: selectedAccount.id,
-    name: selectedAccount.name,
-    maxRiskAmount: selectedAccount.dailyRiskLimit
-  };
 }
+

@@ -312,8 +312,14 @@ export default function NewTradeForm({
   // Load account info on mount
   useEffect(() => {
     getNextAccountToUse()
-      .then(info => setAccountInfo(info))
-      .catch(err => setAccountError(err.message));
+      .then((info: any) => {
+        if (info && info.error) {
+          setAccountError(info.error);
+        } else if (info) {
+          setAccountInfo(info);
+        }
+      })
+      .catch((err: any) => setAccountError("Error inesperado al cargar la cuenta."));
 
     // Check cooldown
     getLastTradeTime().then((lastTime) => {

@@ -83,7 +83,7 @@ function WarningModal({
         <div className="space-y-1 mb-6">
           {flags.map((f) => (
             <div key={f} className="flex items-center gap-2 text-xs p-2 rounded-lg"
-                 style={{ background: "rgba(239,68,68,0.1)" }}>
+              style={{ background: "rgba(239,68,68,0.1)" }}>
               <XCircle size={12} style={{ color: "var(--red)" }} />
               <span>{f}</span>
             </div>
@@ -103,7 +103,7 @@ function WarningModal({
           <button onClick={onAbort} className="btn btn-success w-full py-3">
             <CheckCircle2 size={16} /> Abortar Trade — Salvar mi disciplina
           </button>
-          
+
           <div className="w-full">
             <button
               onClick={onContinue}
@@ -167,7 +167,7 @@ function UploadZone({
       <p className="text-xs font-medium mb-2" style={{ color: "var(--text-muted)" }}>{label}</p>
       {value ? (
         <div className="relative rounded-xl overflow-hidden group cursor-pointer"
-             onClick={() => inputRef.current?.click()}>
+          onClick={() => inputRef.current?.click()}>
           <img src={value} alt={label} className="w-full h-36 object-cover" />
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity
                           flex items-center justify-center text-xs text-white">
@@ -184,7 +184,7 @@ function UploadZone({
                      cursor-pointer transition-all text-xs"
           style={{
             borderColor: dragging ? "var(--brand)" : "var(--border)",
-            background:  dragging ? "var(--brand-dim)" : "var(--bg-elevated)",
+            background: dragging ? "var(--brand-dim)" : "var(--bg-elevated)",
             color: "var(--text-muted)",
           }}
         >
@@ -214,7 +214,7 @@ function CheckItem({
   variant: "red" | "green";
 }) {
   const color = variant === "red" ? "var(--red)" : "var(--green)";
-  const bg    = variant === "red" ? "rgba(239,68,68,0.1)" : "rgba(34,197,94,0.1)";
+  const bg = variant === "red" ? "rgba(239,68,68,0.1)" : "rgba(34,197,94,0.1)";
 
   return (
     <label
@@ -226,7 +226,7 @@ function CheckItem({
         className="w-5 h-5 rounded flex items-center justify-center border shrink-0 transition-all"
         style={{
           borderColor: checked ? color : "var(--border)",
-          background:  checked ? color : "transparent",
+          background: checked ? color : "transparent",
         }}
       >
         {checked && <CheckCircle2 size={12} color="#fff" />}
@@ -249,13 +249,13 @@ function ValidationMsg({ message }: { message: string }) {
 }
 
 // ── Emotion Chips ─────────────────────────────────────────────
-function EmotionChips({ 
-  emotions, value, onChange, label 
-}: { 
-  emotions: readonly { value: string, emoji: string, label: string }[], 
-  value: string, 
-  onChange: (v: string) => void, 
-  label: string 
+function EmotionChips({
+  emotions, value, onChange, label
+}: {
+  emotions: readonly { value: string, emoji: string, label: string }[],
+  value: string,
+  onChange: (v: string) => void,
+  label: string
 }) {
   return (
     <div className="card p-5 mb-4 border border-indigo-500/20 bg-indigo-500/5">
@@ -288,18 +288,18 @@ function EmotionChips({
 
 
 // ── Main Form ─────────────────────────────────────────────────
-export default function NewTradeForm({ 
+export default function NewTradeForm({
   defaultSessionId,
   globalSettings = {}
-}: { 
+}: {
   defaultSessionId?: number;
   globalSettings?: any;
 }) {
   const router = useRouter();
   const { toast } = useToast();
   // step: 1 = checklist, 2 = trade in progress (State A), 3 = register result (State B)
-  const [step, setStep]           = useState<1 | 2 | 3>(1);
-  const [loading, setLoading]     = useState(false);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [checklist, setChecklist] = useState<ChecklistState>(DEFAULT_CHECKLIST);
 
@@ -337,38 +337,38 @@ export default function NewTradeForm({
   }, [cooldownRemaining]);
 
   const [form, setForm] = useState({
-    session_id:      defaultSessionId ?? 0,
-    direction:       "LONG",
-    setup_type:      SETUP_TYPES[0] as string,
-    result_pnl:      "",
-    is_in_plan:      true,
-    notes:           "",
-    screenshot_pre:  null as string | null,
+    session_id: defaultSessionId ?? 0,
+    direction: "LONG",
+    setup_type: SETUP_TYPES[0] as string,
+    result_pnl: "",
+    is_in_plan: true,
+    notes: "",
+    screenshot_pre: null as string | null,
     screenshot_post: null as string | null,
-    mistakes:        [] as string[],
-    mental_state:    "A_GAME",
+    mistakes: [] as string[],
+    mental_state: "A_GAME",
     // new fields
-    emotion_pre:     "",
-    emotion_during:  "",
-    emotion_post:    "",
-    sl_points:       globalSettings?.default_sl_pts?.toString() ?? "30",
-    tp_points:       globalSettings?.default_tp_pts?.toString() ?? "30",
+    emotion_pre: "",
+    emotion_during: "",
+    emotion_post: "",
+    sl_points: globalSettings?.default_sl_pts?.toString() ?? "30",
+    tp_points: globalSettings?.default_tp_pts?.toString() ?? "30",
   });
 
   // ── Computed validation ───────────────────────────────────
-  const riskScore   = calcRiskScore(checklist);
-  const redFlags    = RED_FLAG_FIELDS.filter((f) => checklist[f as keyof ChecklistState]);
+  const riskScore = calcRiskScore(checklist);
+  const redFlags = RED_FLAG_FIELDS.filter((f) => checklist[f as keyof ChecklistState]);
   const hasRedFlags = redFlags.length > 0;
 
   const greenFlagsMet = GREEN_FLAG_FIELDS.filter((f) => checklist[f as keyof ChecklistState]);
-  const greenCount    = greenFlagsMet.length;
-  const hasTrend      = checklist.trend_aligned;
-  const hasStructure  = checklist.break_structure;
-  const minGreenMet   = greenCount >= 3 && hasTrend && hasStructure;
+  const greenCount = greenFlagsMet.length;
+  const hasTrend = checklist.trend_aligned;
+  const hasStructure = checklist.break_structure;
+  const minGreenMet = greenCount >= 3 && hasTrend && hasStructure;
 
   const semaphoreStatus = riskScore === 0
     ? "green" : riskScore < 30
-    ? "amber" : "red";
+      ? "amber" : "red";
 
   const computedRR = (form.sl_points && form.tp_points && +form.sl_points > 0)
     ? (+form.tp_points / +form.sl_points).toFixed(1)
@@ -376,14 +376,14 @@ export default function NewTradeForm({
 
   // What's blocking the main button?
   const getBlockReason = (): string | null => {
-    if (cooldownRemaining > 0) return `Cooldown activo: espera ${Math.ceil(cooldownRemaining/60)} minutos y ${cooldownRemaining%60} segundos.`;
+    if (cooldownRemaining > 0) return `Cooldown activo: espera ${Math.ceil(cooldownRemaining / 60)} minutos y ${cooldownRemaining % 60} segundos.`;
     if (!!accountError) return accountError!;
 
     // Check Out of Hours
     if (globalSettings?.operating_hours_start && globalSettings?.operating_hours_end) {
       const now = new Date();
       const currentHm = now.getHours() * 60 + now.getMinutes();
-      const parseTime = (timeStr: string) => { const [h, m] = timeStr.split(':'); return parseInt(h)*60 + parseInt(m); };
+      const parseTime = (timeStr: string) => { const [h, m] = timeStr.split(':'); return parseInt(h) * 60 + parseInt(m); };
       const startHm = parseTime(globalSettings.operating_hours_start);
       const endHm = parseTime(globalSettings.operating_hours_end);
       if (currentHm < startHm || currentHm > endHm) {
@@ -402,15 +402,15 @@ export default function NewTradeForm({
     return null;
   };
 
-  const blockReason   = getBlockReason();
-  const canAdvance    = !blockReason;
+  const blockReason = getBlockReason();
+  const canAdvance = !blockReason;
 
   const redFlagLabels: Record<string, string> = {
-    has_fomo:         "Estás entrando por FOMO",
-    is_extended:      "El precio está extendido/sobrecomprado",
-    is_chasing:       "Estás persiguiendo la vela",
+    has_fomo: "Estás entrando por FOMO",
+    is_extended: "El precio está extendido/sobrecomprado",
+    is_chasing: "Estás persiguiendo la vela",
     is_revenge_trade: "Estás en modo venganza",
-    is_out_of_hours:  "FUERA DE HORARIO OPERATIVO (07:00-11:00)",
+    is_out_of_hours: "FUERA DE HORARIO OPERATIVO (07:00-11:00)",
   };
 
   // ── Handlers ──────────────────────────────────────────────
@@ -426,9 +426,9 @@ export default function NewTradeForm({
       if (!sessionId) {
         const today = new Date();
         const session = await createSession({
-          date:             today.toISOString(),
-          start_time:       today.toISOString(),
-          mental_state:     form.mental_state,
+          date: today.toISOString(),
+          start_time: today.toISOString(),
+          mental_state: form.mental_state,
           checklist_passed: true,
         });
         sessionId = session.id;
@@ -450,9 +450,9 @@ export default function NewTradeForm({
       if (!sessionId) {
         const today = new Date();
         const session = await createSession({
-          date:             today.toISOString(),
-          start_time:       today.toISOString(),
-          mental_state:     form.mental_state,
+          date: today.toISOString(),
+          start_time: today.toISOString(),
+          mental_state: form.mental_state,
           checklist_passed: true,
         });
         sessionId = session.id;
@@ -466,24 +466,24 @@ export default function NewTradeForm({
       const computedRR = (parseFloat(form.tp_points) / parseFloat(form.sl_points)) || 1.0;
 
       await createTrade({
-        session_id:      sessionId,
-        account_id:      accountInfo.account_id,
-        setup_a_passed:  !hasRedFlags && minGreenMet,
-        risk_accepted:   riskAccepted,
+        session_id: sessionId,
+        account_id: accountInfo.account_id,
+        setup_a_passed: !hasRedFlags && minGreenMet,
+        risk_accepted: riskAccepted,
         execution_score: executionScore,
-        direction:       form.direction,
-        setup_type:      form.setup_type,
-        rr_planned:      Number(computedRR),
-        sl_price:        parseFloat(form.sl_points) || undefined,
-        tp_price:        parseFloat(form.tp_points) || undefined,
-        result_pnl:      parseFloat(form.result_pnl),
-        is_in_plan:      form.is_in_plan,
-        notes:           form.notes,
-        screenshot_pre:  form.screenshot_pre  ?? undefined,
+        direction: form.direction,
+        setup_type: form.setup_type,
+        rr_planned: Number(computedRR),
+        sl_price: parseFloat(form.sl_points) || undefined,
+        tp_price: parseFloat(form.tp_points) || undefined,
+        result_pnl: parseFloat(form.result_pnl),
+        is_in_plan: form.is_in_plan,
+        notes: form.notes,
+        screenshot_pre: form.screenshot_pre ?? undefined,
         screenshot_post: form.screenshot_post ?? undefined,
-        emotion_pre:     form.emotion_pre     || undefined,
-        emotion_during:  form.emotion_during  || undefined,
-        emotion_post:    form.emotion_post    || undefined,
+        emotion_pre: form.emotion_pre || undefined,
+        emotion_during: form.emotion_during || undefined,
+        emotion_post: form.emotion_post || undefined,
         checklist,
         mistakes: mistakeObjects,
       });
@@ -597,9 +597,9 @@ export default function NewTradeForm({
               </p>
               <div className="space-y-2">
                 {[
-                  { key: "has_fomo",         label: "Estoy entrando por FOMO / miedo a perderme" },
-                  { key: "is_extended",      label: "El precio ya está muy extendido / sobrecomprado" },
-                  { key: "is_chasing",       label: "Estoy persiguiendo una vela que ya se movió" },
+                  { key: "has_fomo", label: "Estoy entrando por FOMO / miedo a perderme" },
+                  { key: "is_extended", label: "El precio ya está muy extendido / sobrecomprado" },
+                  { key: "is_chasing", label: "Estoy persiguiendo una vela que ya se movió" },
                   { key: "is_revenge_trade", label: "Estoy operando para recuperar pérdidas (venganza)" },
                 ].map(({ key, label }) => (
                   <CheckItem
@@ -631,10 +631,10 @@ export default function NewTradeForm({
               </div>
               <div className="space-y-2">
                 {[
-                  { key: "trend_aligned",   label: "Tendencia 15m, 5m y 1m alineadas ★ Mandatorio" },
-                  { key: "pullback_ema",    label: "Pullback a EMA9 o EMA20 (Sin estar extendido)" },
-                  { key: "atr_above_avg",   label: "ATR por encima de su media (Mercado moviéndose)" },
-                  { key: "vwap_favor",      label: "SMA200 y VWAP a favor" },
+                  { key: "trend_aligned", label: "Tendencia 15m, 5m y 1m alineadas ★ Mandatorio" },
+                  { key: "pullback_ema", label: "Pullback a EMA9 o EMA20 (Sin estar extendido)" },
+                  { key: "atr_above_avg", label: "ATR por encima de su media (Mercado moviéndose)" },
+                  { key: "vwap_favor", label: "SMA200 y VWAP a favor" },
                   { key: "break_structure", label: "Ruptura de estructura clara en 1m ★ Mandatorio" },
                 ].map(({ key, label }) => (
                   <CheckItem
@@ -655,19 +655,19 @@ export default function NewTradeForm({
                   <p className="text-sm font-bold">
                     {semaphoreStatus === "green" && "✅ VÍA LIBRE — Setup aprobado"}
                     {semaphoreStatus === "amber" && "⚠️ PRECAUCIÓN — Riesgo elevado"}
-                    {semaphoreStatus === "red"   && "🚨 ALTO RIESGO — No operes"}
+                    {semaphoreStatus === "red" && "🚨 ALTO RIESGO — No operes"}
                   </p>
                   <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
                     Risk Score: {riskScore}/100
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
-                     style={{
-                       background: semaphoreStatus === "green" ? "var(--green-dim)"
-                         : semaphoreStatus === "amber" ? "var(--amber-dim)" : "var(--red-dim)",
-                       color: semaphoreStatus === "green" ? "var(--green)"
-                         : semaphoreStatus === "amber" ? "var(--amber)" : "var(--red)",
-                     }}>
+                  style={{
+                    background: semaphoreStatus === "green" ? "var(--green-dim)"
+                      : semaphoreStatus === "amber" ? "var(--amber-dim)" : "var(--red-dim)",
+                    color: semaphoreStatus === "green" ? "var(--green)"
+                      : semaphoreStatus === "amber" ? "var(--amber)" : "var(--red)",
+                  }}>
                   {riskScore}
                 </div>
               </div>
@@ -681,7 +681,7 @@ export default function NewTradeForm({
                   className="w-6 h-6 rounded flex-shrink-0 flex items-center justify-center border transition-all mt-0.5"
                   style={{
                     borderColor: riskAccepted ? "var(--brand)" : "var(--border)",
-                    background:  riskAccepted ? "var(--brand)" : "transparent",
+                    background: riskAccepted ? "var(--brand)" : "transparent",
                   }}
                 >
                   {riskAccepted && <CheckCircle2 size={16} color="#ffffff" />}
@@ -750,7 +750,7 @@ export default function NewTradeForm({
                 <span className={`live-dot ${form.direction === "LONG" ? "green" : "red"}`} />
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest"
-                     style={{ color: form.direction === "LONG" ? "var(--green)" : "var(--red)" }}>
+                    style={{ color: form.direction === "LONG" ? "var(--green)" : "var(--red)" }}>
                     Trade en curso
                   </p>
                   <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
@@ -778,7 +778,7 @@ export default function NewTradeForm({
                         onClick={() => setForm((f) => ({ ...f, direction: d }))}
                         className="flex-1 py-3 rounded-xl text-sm font-bold border transition-all flex items-center justify-center gap-2"
                         style={{
-                          background:  form.direction === d
+                          background: form.direction === d
                             ? d === "LONG" ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)"
                             : "var(--bg-elevated)",
                           borderColor: form.direction === d
@@ -819,8 +819,8 @@ export default function NewTradeForm({
                     <input type="number" className="input text-center" onFocus={e => e.target.select()} value={form.tp_points} onChange={e => setForm(f => ({ ...f, tp_points: e.target.value }))} />
                   </div>
                   <div className="flex-[0.8] flex flex-col justify-end">
-                    <div className="py-2.5 text-center rounded-xl border font-bold text-sm h-[42px] flex items-center justify-center mb-0.5" 
-                         style={{ borderColor: "var(--border)", background: "var(--bg-elevated)", color: "var(--brand)" }}>
+                    <div className="py-2.5 text-center rounded-xl border font-bold text-sm h-[42px] flex items-center justify-center mb-0.5"
+                      style={{ borderColor: "var(--border)", background: "var(--bg-elevated)", color: "var(--brand)" }}>
                       {computedRR}R
                     </div>
                   </div>
@@ -834,7 +834,7 @@ export default function NewTradeForm({
                     style={{ background: form.is_in_plan ? "var(--green)" : "var(--bg-muted)" }}
                   >
                     <div className="absolute w-3.5 h-3.5 bg-white rounded-full transition-all"
-                         style={{ left: form.is_in_plan ? "calc(100% - 18px)" : "3px", top: "3px" }} />
+                      style={{ left: form.is_in_plan ? "calc(100% - 18px)" : "3px", top: "3px" }} />
                   </div>
                   <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
                     Trade dentro del plan de sesión
@@ -963,10 +963,10 @@ export default function NewTradeForm({
                     onClick={() => toggleMistake(value)}
                     className="badge transition-all border"
                     style={{
-                      background:  form.mistakes.includes(value) ? `${color}20` : "var(--bg-elevated)",
+                      background: form.mistakes.includes(value) ? `${color}20` : "var(--bg-elevated)",
                       borderColor: form.mistakes.includes(value) ? color : "transparent",
-                      color:       form.mistakes.includes(value) ? color : "var(--text-muted)",
-                      padding:     "6px 12px",
+                      color: form.mistakes.includes(value) ? color : "var(--text-muted)",
+                      padding: "6px 12px",
                     }}
                   >
                     {label} <span className="ml-1 opacity-60">-{penalty}pts</span>

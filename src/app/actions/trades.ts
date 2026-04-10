@@ -57,27 +57,27 @@ export async function createTrade(data: {
 
   const trade = await prisma.trade.create({
     data: {
-      session_id:     data.session_id,
-      account_id:     data.account_id,
+      session_id: data.session_id,
+      account_id: data.account_id,
       setup_a_passed: data.setup_a_passed,
-      risk_accepted:  data.risk_accepted,
-      execution_score:data.execution_score,
-      time:           data.time ? new Date(data.time) : new Date(),
-      asset:          data.asset ?? "DAX",
-      direction:      data.direction,
-      setup_type:     data.setup_type,
-      rr_planned:     data.rr_planned,
-      entry_price:    data.entry_price ?? null,
-      sl_price:       data.sl_price ?? null,
-      tp_price:       data.tp_price ?? null,
-      result_pnl:     data.result_pnl,
-      is_in_plan:     data.is_in_plan,
-      notes:          data.notes ?? null,
+      risk_accepted: data.risk_accepted,
+      execution_score: data.execution_score,
+      time: data.time ? new Date(data.time) : new Date(),
+      asset: data.asset ?? "DAX",
+      direction: data.direction,
+      setup_type: data.setup_type,
+      rr_planned: data.rr_planned,
+      entry_price: data.entry_price ?? null,
+      sl_price: data.sl_price ?? null,
+      tp_price: data.tp_price ?? null,
+      result_pnl: data.result_pnl,
+      is_in_plan: data.is_in_plan,
+      notes: data.notes ?? null,
       screenshot_pre: data.screenshot_pre ?? null,
       screenshot_post: data.screenshot_post ?? null,
-      emotion_pre:    data.emotion_pre ?? null,
+      emotion_pre: data.emotion_pre ?? null,
       emotion_during: data.emotion_during ?? null,
-      emotion_post:   data.emotion_post ?? null,
+      emotion_post: data.emotion_post ?? null,
       checklist: {
         create: {
           ...data.checklist,
@@ -118,9 +118,9 @@ export async function getTrades(filters?: {
   offset?: number;
 }) {
   const where: Record<string, unknown> = {};
-  if (filters?.session_id)  where.session_id = filters.session_id;
-  if (filters?.setup_type)  where.setup_type  = filters.setup_type;
-  if (filters?.direction)   where.direction   = filters.direction;
+  if (filters?.session_id) where.session_id = filters.session_id;
+  if (filters?.setup_type) where.setup_type = filters.setup_type;
+  if (filters?.direction) where.direction = filters.direction;
   if (filters?.is_in_plan !== undefined) where.is_in_plan = filters.is_in_plan;
   if (filters?.has_mistakes) {
     where.mistakes = { some: {} };
@@ -129,12 +129,12 @@ export async function getTrades(filters?: {
   return prisma.trade.findMany({
     where,
     orderBy: { time: "desc" },
-    take:    filters?.limit  ?? 50,
-    skip:    filters?.offset ?? 0,
+    take: filters?.limit ?? 50,
+    skip: filters?.offset ?? 0,
     include: {
-      session:   { select: { date: true, is_closed: true } },
+      session: { select: { date: true, is_closed: true } },
       checklist: true,
-      mistakes:  true,
+      mistakes: true,
     },
   });
 }

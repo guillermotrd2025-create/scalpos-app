@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { prisma } from "@/lib/prisma";
+import sharp from "sharp";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,31 +13,34 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Sanitise filename
-    const ext      = path.extname(file.name) || ".png";
-    const safeName = `trade_${tradeId ?? "tmp"}_${field ?? "img"}_${Date.now()}${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "screenshots");
-
-    // Ensure directory exists
-    await mkdir(uploadDir, { recursive: true });
-
+    // Convert to Buffer
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(uploadDir, safeName), buffer);
 
-    const publicPath = `/uploads/screenshots/${safeName}`;
+    // Compress image to WebP format to minimize DB storage size
+    // We resize it to max 1280px width to keep it very lightweight
+    // This allows us to store it in DB (Vercel has read-only filesystem)
+    const compressedBuffer = await sharp(buffer)
+      .resize({ width: 1280, withoutEnlargement: true })
+      .webp({ quality: 75 })
+      .toBuffer();
 
-    // If we have a tradeId, persist to DB
+    // Convert to Data URL (base64) string
+    const base64Str = compressedBuffer.toString("base64");
+    const dataUrl = `data:image/webp;base64,${base64Str}`;
+
+    // If we have a tradeId, persist to DB immediately
     if (tradeId && field) {
       const id = parseInt(tradeId, 10);
       if (!isNaN(id)) {
         await prisma.trade.update({
           where: { id },
-          data: { [field]: publicPath },
+          data: { [field]: dataUrl },
         });
       }
     }
 
-    return NextResponse.json({ path: publicPath });
+    // Return the Base64 data URL to the frontend
+    return NextResponse.json({ path: dataUrl });
   } catch (err) {
     console.error("[UPLOAD]", err);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });

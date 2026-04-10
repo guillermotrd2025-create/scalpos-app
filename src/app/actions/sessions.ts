@@ -14,22 +14,36 @@ export async function createSession(data: {
   // Horario restriction removed for development — will be re-added later
   
   if (!data.checklist_passed) {
-    throw new Error("Debes aprobar el checklist pre-vuelo obligatoriamente.");
+    return { error: "Debes aprobar el checklist pre-vuelo obligatoriamente." };
   }
 
-  const session = await prisma.session.create({
-    data: {
-      date:             new Date(data.date ?? Date.now()),
-      start_time:       new Date(data.start_time),
-      mental_state:     data.mental_state,
-      checklist_passed: data.checklist_passed,
-      notes:            data.notes ?? null,
-      discipline_score: 100,
-    },
+  // Prevent multiple active sessions
+  const activeSession = await prisma.session.findFirst({
+    where: { is_closed: false }
   });
-  revalidatePath("/");
-  revalidatePath("/sessions");
-  return session;
+
+  if (activeSession) {
+    return { error: "Ya tienes una sesión activa. Ciérrala antes de abrir una nueva." };
+  }
+
+  try {
+    const session = await prisma.session.create({
+      data: {
+        date:             new Date(data.date ?? Date.now()),
+        start_time:       new Date(data.start_time),
+        mental_state:     data.mental_state,
+        checklist_passed: data.checklist_passed,
+        notes:            data.notes ?? null,
+        discipline_score: 100,
+      },
+    });
+    revalidatePath("/");
+    revalidatePath("/sessions");
+    return session;
+  } catch (err) {
+    console.error("[CREATE SESSION ERROR]", err);
+    return { error: "Error de base de datos al crear la sesión." };
+  }
 }
 
 // ── Get all sessions (paginated desc by date) ────────────────

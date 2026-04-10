@@ -431,13 +431,21 @@ export default function NewTradeForm({
       let sessionId = form.session_id;
       if (!sessionId) {
         const today = new Date();
-        const session = await createSession({
+        const result = await createSession({
           date: today.toISOString(),
           start_time: today.toISOString(),
           mental_state: form.mental_state,
           checklist_passed: true,
         });
-        sessionId = session.id;
+        
+        if (result && "error" in result) {
+            toast("Error abortando: " + result.error, "error");
+            return;
+        }
+        
+        if (result && "id" in result) {
+            sessionId = result.id;
+        }
       }
       toast("Trade abortado exitosamente. Esquivaste la bala.", "success");
       router.push("/");
@@ -455,13 +463,22 @@ export default function NewTradeForm({
       let sessionId = form.session_id;
       if (!sessionId) {
         const today = new Date();
-        const session = await createSession({
+        const result = await createSession({
           date: today.toISOString(),
           start_time: today.toISOString(),
           mental_state: form.mental_state,
           checklist_passed: true,
         });
-        sessionId = session.id;
+        
+        if (result && "error" in result) {
+            setLoading(false);
+            toast("Error creando sesión: " + result.error, "error");
+            return;
+        }
+        
+        if (result && "id" in result) {
+            sessionId = result.id;
+        }
       }
 
       const mistakeObjects = form.mistakes.map((type) => {

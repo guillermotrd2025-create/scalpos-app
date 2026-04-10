@@ -26,17 +26,25 @@ export default function NewSessionButton() {
     setLoading(true);
     const now = new Date().toISOString();
     try {
-      const session = await createSession({
+      const result = await createSession({
         date:            now,
         start_time:      now,
         mental_state:    form.mental_state,
         checklist_passed: true,
         notes:           form.notes,
       });
+      
+      if (result && "error" in result) {
+        alert(result.error);
+        return;
+      }
+      
       setOpen(false);
-      router.push(`/sessions/${session.id}`);
+      if (result && "id" in result) {
+        router.push(`/sessions/${result.id}`);
+      }
     } catch (error: any) {
-      alert(error.message || "Error al iniciar sesión");
+      alert("Error inesperado al iniciar sesión");
     } finally {
       setLoading(false);
     }

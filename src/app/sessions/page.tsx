@@ -9,6 +9,7 @@ export const metadata = { title: "Sesiones — ScalpOS" };
 
 export default async function SessionsPage() {
   const sessions = await getSessions(50);
+  const hasActiveSession = sessions.some((s: any) => !s.is_closed);
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-5">
@@ -19,7 +20,7 @@ export default async function SessionsPage() {
             Historial de días de trading
           </p>
         </div>
-        <NewSessionButton />
+        <NewSessionButton hasActiveSession={hasActiveSession} />
       </div>
 
       {sessions.length === 0 ? (
@@ -27,7 +28,7 @@ export default async function SessionsPage() {
           <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>
             No hay sesiones registradas. Comienza tu primer día.
           </p>
-          <NewSessionButton />
+          <NewSessionButton hasActiveSession={hasActiveSession} />
         </div>
       ) : (
         <div className="space-y-3">

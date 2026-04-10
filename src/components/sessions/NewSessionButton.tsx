@@ -8,7 +8,7 @@ import { Plus, X, CheckSquare, Square } from "lucide-react";
 import Portal from "@/components/ui/Portal";
 
 
-export default function NewSessionButton() {
+export default function NewSessionButton({ hasActiveSession }: { hasActiveSession?: boolean }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -52,7 +52,16 @@ export default function NewSessionButton() {
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="btn btn-primary">
+      <button 
+        onClick={() => {
+          if (hasActiveSession) {
+            alert("Ya tienes una sesión activa. Ve al Dashboard para verla o ciérrala antes de abrir una nueva.");
+            return;
+          }
+          setOpen(true);
+        }} 
+        className="btn btn-primary"
+      >
         <Plus size={15} /> Nueva Sesión
       </button>
 

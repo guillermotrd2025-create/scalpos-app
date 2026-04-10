@@ -34,6 +34,8 @@ export async function createSession(data: {
 
 // ── Get all sessions (paginated desc by date) ────────────────
 export async function getSessions(limit = 30, offset = 0) {
+  await autoCloseStaleSessions();
+
   return prisma.session.findMany({
     orderBy: { date: "desc" },
     take:    limit,
@@ -45,6 +47,7 @@ export async function getSessions(limit = 30, offset = 0) {
     },
   });
 }
+
 
 // ── Get single session ───────────────────────────────────────
 export async function getSession(id: number) {
@@ -59,8 +62,34 @@ export async function getSession(id: number) {
   });
 }
 
+// ── Auto-close stale sessions (from previous days) ──────────
+async function autoCloseStaleSessions() {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const staleSessions = await prisma.session.findMany({
+    where: {
+      is_closed: false,
+      date: { lt: startOfDay }
+    }
+  });
+
+  for (const sess of staleSessions) {
+    await prisma.session.update({
+      where: { id: sess.id },
+      data: {
+        is_closed: true,
+        end_time: new Date(),
+        conclusion: "Sesión cerrada automáticamente al acabar el día.",
+      }
+    });
+  }
+}
+
 // ── Get today's open session (or null) ───────────────────────
 export async function getTodaySession() {
+  await autoCloseStaleSessions();
+
   const start = new Date();
   start.setHours(0, 0, 0, 0);
   const end = new Date();
@@ -77,6 +106,7 @@ export async function getTodaySession() {
     orderBy: { created_at: "desc" },
   });
 }
+
 
 // ── Close a session (requires conclusion) ───────────────────
 export async function closeSession(

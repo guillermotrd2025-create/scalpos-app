@@ -8,7 +8,8 @@ import { getNextAccountToUse } from "@/app/actions/accounts";
 import {
   SETUP_TYPES, MISTAKE_TYPES,
   RED_FLAG_FIELDS, GREEN_FLAG_FIELDS,
-  EMOTIONS_PRE, EMOTIONS_DURING, EMOTIONS_POST
+  EMOTIONS_PRE, EMOTIONS_DURING, EMOTIONS_POST,
+  PSYCHOTRADING_QUOTES,
 } from "@/lib/constants";
 import { calcRiskScore } from "@/lib/utils";
 import { getLastTradeTime } from "@/app/actions/trades";
@@ -121,6 +122,144 @@ function WarningModal({
             </p>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Cooldown Modal ────────────────────────────────────────────
+const COOLDOWN_SECS = 180;
+
+function CooldownModal({
+  pnl,
+  executionScore,
+  sessionId,
+  onDone,
+}: {
+  pnl: number;
+  executionScore: number;
+  sessionId: number;
+  onDone: () => void;
+}) {
+  const router = useRouter();
+  const [timeLeft, setTimeLeft] = useState(COOLDOWN_SECS);
+  const [quote] = useState(
+    () => PSYCHOTRADING_QUOTES[Math.floor(Math.random() * PSYCHOTRADING_QUOTES.length)]
+  );
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [timeLeft]);
+
+  const mins = Math.floor(timeLeft / 60);
+  const secs = timeLeft % 60;
+  const formatted = `${mins}:${secs.toString().padStart(2, "0")}`;
+  const progress = ((COOLDOWN_SECS - timeLeft) / COOLDOWN_SECS) * 100;
+  const isWin = pnl >= 0;
+
+  const handleGo = () => {
+    onDone();
+    router.push(`/sessions/${sessionId}`);
+  };
+
+  return (
+    <div className="modal-overlay animate-fade-in" style={{ zIndex: 200 }}>
+      <div
+        className="modal-box animate-scale-in"
+        style={{ maxWidth: 480, padding: "2rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}
+      >
+        {/* Header */}
+        <div className="text-center">
+          <div className="text-4xl mb-2">{timeLeft > 0 ? "🧘" : "✅"}</div>
+          <h2 className="text-xl font-bold tracking-tight">
+            {timeLeft > 0 ? "Cooldown Obligatorio" : "¡Puedes continuar!"}
+          </h2>
+          <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+            Trade registrado correctamente
+          </p>
+        </div>
+
+        {/* PnL & Score Summary */}
+        <div
+          className="flex items-center justify-around rounded-xl p-4"
+          style={{ background: "var(--bg-elevated)", border: `1px solid ${isWin ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}` }}
+        >
+          <div className="text-center">
+            <p className="text-xs mb-1" style={{ color: "var(--text-muted)" }}>Resultado PnL</p>
+            <p
+              className="text-3xl font-bold font-mono"
+              style={{ color: isWin ? "var(--green)" : "var(--red)" }}
+            >
+              {isWin ? "+" : ""}{pnl.toFixed(2)}€
+            </p>
+          </div>
+          <div style={{ width: 1, height: 48, background: "var(--border)" }} />
+          <div className="text-center">
+            <p className="text-xs mb-1" style={{ color: "var(--text-muted)" }}>Score Ejecución</p>
+            <p className="text-3xl font-bold font-mono" style={{ color: "#a855f7" }}>
+              {executionScore}<span className="text-lg">/10</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Psychotrading Quote */}
+        <div
+          className="rounded-xl p-4"
+          style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)" }}
+        >
+          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#818cf8" }}>💭 Reflexión</p>
+          <blockquote className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+            &ldquo;{quote.quote}&rdquo;
+          </blockquote>
+          <p className="text-xs mt-2 text-right" style={{ color: "var(--text-muted)" }}>— {quote.author}</p>
+        </div>
+
+        {/* Account Change Warning */}
+        <div
+          className="flex items-start gap-3 rounded-xl p-4"
+          style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.35)" }}
+        >
+          <span className="text-xl shrink-0">🚨</span>
+          <div>
+            <p className="text-sm font-bold" style={{ color: "var(--red)" }}>CAMBIA DE CUENTA EN TU BROKER</p>
+            <p className="text-xs mt-0.5 leading-relaxed" style={{ color: "rgba(239,68,68,0.8)" }}>
+              Antes de la siguiente operación, asegúrate de estar operando en la cuenta correcta según la rotación activa de ScalpOS.
+            </p>
+          </div>
+        </div>
+
+        {/* Progress Bar + Timer */}
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs" style={{ color: "var(--text-muted)" }}>Cooldown anti-overtrading</span>
+            <span className="text-sm font-mono font-bold" style={{ color: timeLeft > 0 ? "var(--amber)" : "var(--green)" }}>
+              {timeLeft > 0 ? formatted : "¡Listo!"}
+            </span>
+          </div>
+          <div className="rounded-full overflow-hidden" style={{ height: 6, background: "var(--bg-elevated)" }}>
+            <div
+              className="h-full rounded-full transition-all duration-1000"
+              style={{
+                width: `${progress}%`,
+                background: progress < 100 ? "var(--amber)" : "var(--green)",
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <button
+          onClick={handleGo}
+          disabled={timeLeft > 0}
+          className="btn btn-primary w-full py-4 font-bold text-base disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ fontSize: "0.95rem" }}
+        >
+          {timeLeft > 0
+            ? <><span className="animate-spin-slow inline-block">⏳</span>&nbsp; Espera {formatted} para continuar...</>
+            : <>✅ Entendido — Ver mi Sesión</>}
+        </button>
       </div>
     </div>
   );
@@ -301,6 +440,8 @@ export default function NewTradeForm({
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showCooldownModal, setShowCooldownModal] = useState(false);
+  const [savedTradeData, setSavedTradeData] = useState<{ pnl: number; score: number; sessionId: number } | null>(null);
   const [checklist, setChecklist] = useState<ChecklistState>(DEFAULT_CHECKLIST);
 
   const [accountInfo, setAccountInfo] = useState<{ account_id: number; name: string; maxRiskAmount: number } | null>(null);
@@ -511,9 +652,9 @@ export default function NewTradeForm({
         mistakes: mistakeObjects,
       });
 
-      router.push("/trades");
       toast("Trade completado y guardado correctamente.", "success");
-      router.push("/trades");
+      setSavedTradeData({ pnl: parseFloat(form.result_pnl), score: executionScore, sessionId });
+      setShowCooldownModal(true);
     } catch (e: any) {
       toast("Error guardando el trade: " + e.message, "error");
     } finally {
@@ -538,6 +679,15 @@ export default function NewTradeForm({
           flags={redFlags.map((f) => redFlagLabels[f as string])}
           onContinue={() => { setShowModal(false); setStep(2); }}
           onAbort={() => { setShowModal(false); router.push("/"); }}
+        />
+      )}
+
+      {showCooldownModal && savedTradeData && (
+        <CooldownModal
+          pnl={savedTradeData.pnl}
+          executionScore={savedTradeData.score}
+          sessionId={savedTradeData.sessionId}
+          onDone={() => setShowCooldownModal(false)}
         />
       )}
 

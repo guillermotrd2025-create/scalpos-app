@@ -89,3 +89,39 @@ export const EMOTIONS_POST = [
   { value: "DISAPPOINTED", emoji: "😭", label: "Decepcionado" },
   { value: "INDIFFERENT",  emoji: "🥱", label: "Indiferente" },
 ] as const;
+
+// Post-trade psychotrading reflection quotes (shown randomly in cooldown modal)
+export const PSYCHOTRADING_QUOTES = [
+  {
+    quote: "Lo importante no es el PnL de este trade. Lo importante es si has seguido tu plan al 100%.",
+    author: "Filosofía ScalpOS",
+  },
+  {
+    quote: "Una pérdida siguiendo tus reglas es una victoria de disciplina. Una ganancia rompiéndolas es una deuda con el mercado.",
+    author: "Mark Douglas",
+  },
+  {
+    quote: "Tu cerebro acaba de liberar dopamina. Espera. Los mejores traders no actúan bajo la influencia de sus emociones.",
+    author: "Psicología del Trading",
+  },
+  {
+    quote: "El mercado hace lo que quiere. Tu único trabajo es gestionar el riesgo y respetar las reglas. Eso es todo.",
+    author: "Filosofía ScalpOS",
+  },
+  {
+    quote: "Piensa en series de 100 trades, no en este. Este resultado es una gota en el océano de tu estadística.",
+    author: "Mark Douglas",
+  },
+  {
+    quote: "Si sientes la urgencia de volver a entrar ahora mismo, eso es exactamente la señal de que debes esperar.",
+    author: "Psicología del Trading",
+  },
+  {
+    quote: "La consistencia se construye trade a trade, respetando el proceso. El PnL es consecuencia, no objetivo.",
+    author: "Filosofía ScalpOS",
+  },
+  {
+    quote: "El mejor trade que puedes hacer ahora mismo es no hacer ninguno. Usa estos 3 minutos para resetear.",
+    author: "Psicología del Trading",
+  },
+] as const;

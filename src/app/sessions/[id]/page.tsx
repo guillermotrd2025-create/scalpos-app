@@ -5,10 +5,10 @@ import {
   formatDate, formatTime, formatPnl,
   getDisciplineColor, getDisciplineLabel, getMistakeInfo,
 } from "@/lib/utils";
-import {
-  CheckCircle2, XCircle, AlertTriangle, Clock, TrendingUp, TrendingDown,
-} from "lucide-react";
+import { Clock } from "lucide-react";
+
 import CloseSessionPanel from "@/components/sessions/CloseSessionPanel";
+import SessionTradesClient from "@/components/sessions/SessionTradesClient";
 
 export const metadata = { title: "Detalle Sesión — ScalpOS" };
 
@@ -107,78 +107,15 @@ export default async function SessionDetailPage({
              style={{ borderColor: "var(--border)" }}>
           <p className="text-sm font-semibold">Trades de la sesión</p>
           <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-            {session.trades.length} registrados
+            {session.trades.length} registrados — clic para ver detalle
           </span>
         </div>
-
-        {session.trades.length === 0 ? (
-          <div className="p-8 text-center text-sm" style={{ color: "var(--text-muted)" }}>
-            Sin trades registrados en esta sesión
-          </div>
-        ) : (
-          <div className="divide-y" style={{ borderColor: "var(--border)" }}>
-            {session.trades.map((t: any) => (
-              <div key={t.id} className="px-5 py-4 flex items-center gap-4 hover:bg-zinc-800/30 transition-colors">
-                {/* Direction */}
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-bold text-sm
-                  ${t.direction === "LONG" ? "bg-emerald-400/10 text-emerald-400" : "bg-red-400/10 text-red-400"}`}>
-                  {t.direction === "LONG" ? "▲" : "▼"}
-                </div>
-
-                {/* Setup & time */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{t.setup_type}</p>
-                  <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
-                    {formatTime(t.time)} · {t.rr_planned}R planeado
-                  </p>
-                </div>
-
-                {/* In plan */}
-                <div className="shrink-0">
-                  {t.is_in_plan
-                    ? <CheckCircle2 size={16} style={{ color: "var(--green)" }} />
-                    : <XCircle size={16} style={{ color: "var(--red)" }} />}
-                </div>
-
-                {/* Mistakes */}
-                {t.mistakes.length > 0 && (
-                  <div className="flex gap-1 flex-wrap max-w-[160px]">
-                    {t.mistakes.map((m: any) => {
-                      const info = getMistakeInfo(m.mistake_type);
-                      return (
-                        <span key={m.id} className="badge text-[10px]"
-                              style={{ background: `${info.color}18`, color: info.color }}>
-                          {info.label}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Screenshots */}
-                {t.screenshot_pre && (
-                  <a href={t.screenshot_pre} target="_blank" rel="noreferrer">
-                    <img src={t.screenshot_pre} alt="pre"
-                         className="w-16 h-10 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
-                         style={{ borderColor: "var(--border)" }} />
-                  </a>
-                )}
-
-                {/* PnL */}
-                <div className="text-right shrink-0 min-w-[70px]">
-                  <p className="text-sm font-mono font-bold"
-                     style={{ color: t.result_pnl >= 0 ? "var(--green)" : "var(--red)" }}>
-                    {formatPnl(t.result_pnl)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <SessionTradesClient trades={session.trades} />
       </div>
     </div>
   );
 }
+
 
 function StatCard({ label, value, color }: { label: string; value: string; color: string }) {
   return (

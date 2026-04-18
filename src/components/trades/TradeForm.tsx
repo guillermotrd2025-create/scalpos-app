@@ -398,7 +398,7 @@ function EmotionChips({
 }) {
   return (
     <div className="card p-5 mb-4 border border-indigo-500/20 bg-indigo-500/5">
-      <p className="text-xs font-semibold mb-3 tracking-widest text-[#a855f7] uppercase">{label} <span style={{ color: "var(--red)" }}>*</span></p>
+      <p className="text-xs font-semibold mb-4 tracking-widest text-[#a855f7] uppercase">{label} <span style={{ color: "var(--red)" }}>*</span></p>
       <div className="flex flex-wrap gap-2">
         {emotions.map((e) => {
           const isSelected = value === e.value;
@@ -406,17 +406,17 @@ function EmotionChips({
             <button
               key={e.value}
               onClick={() => onChange(e.value)}
-              className="badge transition-all select-none border"
+              className="flex flex-col items-center gap-1 transition-all select-none border rounded-xl"
               style={{
                 background: isSelected ? "rgba(168, 85, 247, 0.15)" : "var(--bg-elevated)",
-                borderColor: isSelected ? "#a855f7" : "transparent",
+                borderColor: isSelected ? "#a855f7" : "var(--border)",
                 color: isSelected ? "#a855f7" : "var(--text-muted)",
-                padding: "8px 12px",
-                borderRadius: "12px",
-                fontSize: "13px"
+                padding: "10px 14px",
+                minWidth: "72px",
               }}
             >
-              <span className="mr-1">{e.emoji}</span> {e.label}
+              <span style={{ fontSize: "1.6rem", lineHeight: 1 }}>{e.emoji}</span>
+              <span style={{ fontSize: "11px", fontWeight: isSelected ? 600 : 400, marginTop: 2 }}>{e.label}</span>
             </button>
           );
         })}

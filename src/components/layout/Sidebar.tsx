@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   TrendingUp,
   BookOpen,
-  Image as ImageIcon,
   Activity,
   ChevronRight,
   Settings
@@ -14,12 +13,11 @@ import {
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/",           label: "Dashboard",   icon: LayoutDashboard },
-  { href: "/sessions",   label: "Sesiones",    icon: Activity },
-  { href: "/trades/new", label: "Nuevo Trade", icon: TrendingUp, accent: true },
-  { href: "/trades",     label: "Mis Trades",  icon: BookOpen },
-  { href: "/gallery",    label: "Galería",     icon: ImageIcon },
-  { href: "/settings",   label: "Configuración",icon: Settings },
+  { href: "/",           label: "Dashboard",    icon: LayoutDashboard },
+  { href: "/sessions",   label: "Sesiones",     icon: Activity },
+  { href: "/trades/new", label: "Nuevo Trade",  icon: TrendingUp, accent: true },
+  { href: "/trades",     label: "Mis Trades",   icon: BookOpen },
+  { href: "/settings",   label: "Configuración", icon: Settings },
 ];
 
 export default function Sidebar() {

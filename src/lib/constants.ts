@@ -3,27 +3,27 @@
 // ============================================================
 
 export const SETUP_TYPES = [
-  "BOS+Retest EMA9",
-  "FVG+Order Block",
-  "VWAP Bounce",
-  "PDH/PDL Break",
-  "EMA9 Cross",
-  "Structure Sweep",
-  "Opening Range Break",
-  "Manual / Other",
+  "Rotura+Retest EMA9",
+  "FVG+Bloque de Órdenes",
+  "Rebote VWAP",
+  "Rotura PDH/PDL",
+  "Cruce EMA9",
+  "Barrido de Estructura",
+  "Rotura Rango Apertura",
+  "Manual / Otro",
 ] as const;
 
 export const MISTAKE_TYPES = [
-  { value: "FOMO",         label: "FOMO",              penalty: 10, color: "#ef4444" },
-  { value: "REVENGE",      label: "Revenge Trade",     penalty: 15, color: "#f97316" },
-  { value: "CHASING",      label: "Chasing the Candle",penalty: 10, color: "#eab308" },
-  { value: "OVERTRADING",  label: "Overtrading",       penalty: 8,  color: "#a855f7" },
-  { value: "BOREDOM",      label: "Boredom Trade",     penalty: 8,  color: "#6366f1" },
-  { value: "EARLY_EXIT",   label: "Early Exit",        penalty: 5,  color: "#14b8a6" },
-  { value: "LATE_ENTRY",   label: "Late Entry",        penalty: 5,  color: "#0ea5e9" },
-  { value: "NO_SL",        label: "No Stop Loss",      penalty: 20, color: "#dc2626" },
-  { value: "MOVED_SL",     label: "Moved SL to Worse", penalty: 12, color: "#b91c1c" },
-  { value: "DANGER_TRADE", label: "Ignored Danger Sign",penalty: 15, color: "#ef4444" },
+  { value: "FOMO",         label: "FOMO",                    penalty: 10, color: "#ef4444" },
+  { value: "REVENGE",      label: "Trade de Venganza",       penalty: 15, color: "#f97316" },
+  { value: "CHASING",      label: "Persiguiendo la Vela",    penalty: 10, color: "#eab308" },
+  { value: "OVERTRADING",  label: "Sobreoperación",          penalty: 8,  color: "#a855f7" },
+  { value: "BOREDOM",      label: "Trade por Aburrimiento",  penalty: 8,  color: "#6366f1" },
+  { value: "EARLY_EXIT",   label: "Salida Prematura",        penalty: 5,  color: "#14b8a6" },
+  { value: "LATE_ENTRY",   label: "Entrada Tardía",          penalty: 5,  color: "#0ea5e9" },
+  { value: "NO_SL",        label: "Sin Stop Loss",           penalty: 20, color: "#dc2626" },
+  { value: "MOVED_SL",     label: "Moviste el SL en contra", penalty: 12, color: "#b91c1c" },
+  { value: "DANGER_TRADE", label: "Ignoraste Señal de Peligro", penalty: 15, color: "#ef4444" },
 ] as const;
 
 export const MENTAL_STATES = [
@@ -68,25 +68,34 @@ export const GREEN_FLAG_FIELDS = [
   "break_structure",
 ] as const;
 
-// Emotion selectors for 3-phase psychotrading
+// Emotion selectors for 3-phase psychotrading (7 options each)
 export const EMOTIONS_PRE = [
-  { value: "COLD",      emoji: "🥶", label: "Frío" },
+  { value: "COLD",      emoji: "🥶", label: "Frío / Neutro" },
+  { value: "FOCUSED",   emoji: "🎯", label: "Enfocado" },
   { value: "CONFIDENT", emoji: "😎", label: "Confiado" },
+  { value: "EXCITED",   emoji: "⚡", label: "Excitado" },
   { value: "ANXIOUS",   emoji: "😰", label: "Ansioso" },
-  { value: "FOMO",      emoji: "🤑", label: "FOMO" },
+  { value: "TIRED",     emoji: "😴", label: "Cansado" },
+  { value: "FOMO",      emoji: "🤑", label: "Con FOMO" },
 ] as const;
 
 export const EMOTIONS_DURING = [
   { value: "CALM",       emoji: "🧘", label: "Tranquilo" },
+  { value: "CONFIDENT",  emoji: "💪", label: "Confiado" },
   { value: "NERVOUS",    emoji: "😬", label: "Nervioso" },
+  { value: "IMPATIENT",  emoji: "⏳", label: "Impaciente" },
   { value: "FRUSTRATED", emoji: "😡", label: "Frustrado" },
+  { value: "FEARFUL",    emoji: "😨", label: "Con miedo" },
   { value: "EUPHORIC",   emoji: "🤩", label: "Eufórico" },
 ] as const;
 
 export const EMOTIONS_POST = [
   { value: "SATISFIED",    emoji: "😌", label: "Satisfecho" },
+  { value: "PROUD",        emoji: "🏆", label: "Orgulloso" },
+  { value: "RELIEVED",     emoji: "😅", label: "Aliviado" },
+  { value: "CALM",         emoji: "🧘", label: "Tranquilo" },
+  { value: "DISAPPOINTED", emoji: "😞", label: "Decepcionado" },
   { value: "ANGRY",        emoji: "😤", label: "Cabreado" },
-  { value: "DISAPPOINTED", emoji: "😭", label: "Decepcionado" },
   { value: "INDIFFERENT",  emoji: "🥱", label: "Indiferente" },
 ] as const;
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   X, TrendingUp, TrendingDown, CheckCircle2, XCircle, ZoomIn,
 } from "lucide-react";
@@ -12,6 +13,11 @@ import { formatTime, formatPnl, getMistakeInfo } from "@/lib/utils";
 // ── Lightbox ────────────────────────────────────────────────────────
 function ImageViewer({ src, alt, label }: { src: string; alt: string; label: string }) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <>
@@ -34,7 +40,7 @@ function ImageViewer({ src, alt, label }: { src: string; alt: string; label: str
         </div>
       </div>
 
-      {open && (
+      {open && mounted && createPortal(
         <div
           className="fixed inset-0 bg-black/95 flex items-center justify-center p-4 animate-fade-in"
           style={{ zIndex: 9999 }}
@@ -59,7 +65,8 @@ function ImageViewer({ src, alt, label }: { src: string; alt: string; label: str
             className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           />
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
@@ -115,14 +122,19 @@ export default function TradeDetailModal({
   const emotionDuring = EMOTIONS_DURING.find((e) => e.value === trade.emotion_during);
   const emotionPost   = EMOTIONS_POST.find((e) => e.value === trade.emotion_post);
 
+  const [mounted, setMounted] = useState(false);
+
   // Close on Escape
   useEffect(() => {
+    setMounted(true);
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <div
       className="modal-overlay animate-fade-in"
       style={{ zIndex: 300 }}
@@ -323,6 +335,7 @@ export default function TradeDetailModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

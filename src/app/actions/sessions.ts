@@ -146,6 +146,13 @@ export async function closeSession(
   return session;
 }
 
+// ── Delete session ───────────────────────────────────────────
+export async function deleteSession(id: number) {
+  await prisma.session.delete({ where: { id } });
+  revalidatePath("/");
+  revalidatePath("/sessions");
+}
+
 // ── Update session PnL ───────────────────────────────────────
 export async function recalcSessionPnl(sessionId: number) {
   const trades = await prisma.trade.findMany({

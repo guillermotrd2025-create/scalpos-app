@@ -9,6 +9,7 @@ import { Clock } from "lucide-react";
 
 import CloseSessionPanel from "@/components/sessions/CloseSessionPanel";
 import SessionTradesClient from "@/components/sessions/SessionTradesClient";
+import DeleteSessionButton from "@/components/sessions/DeleteSessionButton";
 
 export const metadata = { title: "Detalle Sesión — ScalpOS" };
 
@@ -50,12 +51,15 @@ export default async function SessionDetailPage({
             </span>
           </div>
         </div>
-        {!session.is_closed && (
-          <CloseSessionPanel
-            sessionId={session.id}
-            currentScore={session.discipline_score}
-          />
-        )}
+        <div className="flex items-center gap-3">
+          {!session.is_closed && (
+            <CloseSessionPanel
+              sessionId={session.id}
+              currentScore={session.discipline_score}
+            />
+          )}
+          <DeleteSessionButton sessionId={session.id} />
+        </div>
       </div>
 
       {/* KPIs */}

@@ -293,6 +293,21 @@ function UploadZone({
     setUploading(false);
   };
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.startsWith("image/")) {
+            const file = items[i].getAsFile();
+            if (file) {
+                e.preventDefault();
+                handleFile(file);
+                break;
+            }
+        }
+    }
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -305,7 +320,9 @@ function UploadZone({
     <div>
       <p className="text-xs font-medium mb-2" style={{ color: "var(--text-muted)" }}>{label}</p>
       {value ? (
-        <div className="relative rounded-xl overflow-hidden group cursor-pointer"
+        <div className="relative rounded-xl overflow-hidden group cursor-pointer focus:ring-2 focus:ring-[var(--brand)] outline-none"
+          tabIndex={0}
+          onPaste={handlePaste}
           onClick={() => inputRef.current?.click()}>
           <img src={value} alt={label} className="w-full h-36 object-cover" />
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity
@@ -315,12 +332,14 @@ function UploadZone({
         </div>
       ) : (
         <div
+          tabIndex={0}
+          onPaste={handlePaste}
           onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
           onDrop={onDrop}
           onClick={() => inputRef.current?.click()}
           className="border-2 border-dashed rounded-xl h-36 flex flex-col items-center justify-center gap-2
-                     cursor-pointer transition-all text-xs"
+                     cursor-pointer transition-all text-xs focus:ring-2 focus:ring-[var(--brand)] outline-none"
           style={{
             borderColor: dragging ? "var(--brand)" : "var(--border)",
             background: dragging ? "var(--brand-dim)" : "var(--bg-elevated)",
@@ -328,7 +347,7 @@ function UploadZone({
           }}
         >
           <Upload size={20} />
-          <span>{uploading ? "Subiendo..." : "Arrastra o haz clic"}</span>
+          <span>{uploading ? "Subiendo..." : "Arrastra, haz clic o pega"}</span>
           <span style={{ color: "var(--text-muted)", opacity: 0.6 }}>PNG, JPG, WebP</span>
         </div>
       )}

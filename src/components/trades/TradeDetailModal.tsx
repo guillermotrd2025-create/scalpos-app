@@ -9,6 +9,7 @@ import {
   EMOTIONS_PRE, EMOTIONS_DURING, EMOTIONS_POST,
 } from "@/lib/constants";
 import { formatTime, formatPnl, getMistakeInfo } from "@/lib/utils";
+import { deleteTrade } from "@/app/actions/trades";
 
 // ── Lightbox ────────────────────────────────────────────────────────
 function ImageViewer({ src, alt, label }: { src: string; alt: string; label: string }) {
@@ -172,7 +173,7 @@ export default function TradeDetailModal({
               <p className="font-semibold text-sm">{trade.setup_type}</p>
               <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
                 {formatTime(trade.time)}
-                {trade.rr_planned ? ` · ${trade.rr_planned}R planeado` : ""}
+                {trade.rr_planned ? ` · ${Number(trade.rr_planned).toFixed(2)}R planeado` : ""}
               </p>
             </div>
           </div>
@@ -327,9 +328,21 @@ export default function TradeDetailModal({
 
         {/* ── Footer ── */}
         <div
-          className="shrink-0 px-6 py-3 border-t flex justify-end"
+          className="shrink-0 px-6 py-3 border-t flex justify-between items-center"
           style={{ borderColor: "var(--border)" }}
         >
+          <button
+            onClick={async () => {
+              if (window.confirm("¿Seguro que quieres borrar este trade? Esta acción no se puede deshacer.")) {
+                await deleteTrade(trade.id);
+                onClose();
+              }
+            }}
+            className="text-xs transition-colors hover:text-red-400"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Borrar trade
+          </button>
           <button onClick={onClose} className="btn btn-ghost text-sm px-5">
             Cerrar
           </button>

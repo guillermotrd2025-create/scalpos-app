@@ -176,7 +176,7 @@ export default async function DashboardPage() {
                         </span>
                       </td>
                       <td className="py-2 pr-4 font-medium" style={{ color: "var(--text-primary)" }}>{t.setup_type}</td>
-                      <td className="py-2 pr-4" style={{ color: "var(--text-muted)" }}>{t.rr_planned}R</td>
+                      <td className="py-2 pr-4" style={{ color: "var(--text-muted)" }}>{Number(t.rr_planned).toFixed(2)}R</td>
                       <td className="py-2 pr-4 font-mono font-semibold" style={{ color: t.result_pnl >= 0 ? "var(--green)" : "var(--red)" }}>
                         {formatPnl(t.result_pnl)}
                       </td>

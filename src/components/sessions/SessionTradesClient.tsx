@@ -56,7 +56,7 @@ export default function SessionTradesClient({ trades }: { trades: any[] }) {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{t.setup_type}</p>
                 <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
-                  {formatTime(t.time)} · {t.rr_planned}R planeado
+                  {formatTime(t.time)} · {Number(t.rr_planned).toFixed(2)}R planeado
                 </p>
               </div>
 

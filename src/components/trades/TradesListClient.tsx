@@ -121,7 +121,7 @@ export default function TradesListClient({
                       {t.sl_price ?? "—"}:{t.tp_price ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-xs" style={{ color: "var(--text-muted)" }}>
-                      {t.rr_planned}R
+                      {Number(t.rr_planned).toFixed(2)}R
                     </td>
                     <td
                       className="px-4 py-3 font-mono font-bold whitespace-nowrap"

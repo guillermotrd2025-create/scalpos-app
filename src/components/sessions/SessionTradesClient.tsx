@@ -54,7 +54,14 @@ export default function SessionTradesClient({ trades }: { trades: any[] }) {
 
               {/* Setup & time */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{t.setup_type}</p>
+                <p className="text-sm font-medium truncate flex items-center gap-2">
+                  <span>{t.setup_type}</span>
+                  {t.account?.name && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-zinc-800 text-zinc-400">
+                      {t.account.name}
+                    </span>
+                  )}
+                </p>
                 <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
                   {formatTime(t.time)} · {Number(t.rr_planned).toFixed(2)}R planeado
                 </p>

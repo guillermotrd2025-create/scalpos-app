@@ -56,7 +56,7 @@ export async function getSessions(limit = 30, offset = 0) {
     skip:    offset,
     include: {
       trades: {
-        include: { mistakes: true, checklist: true },
+        include: { mistakes: true, checklist: true, account: { select: { name: true } } },
       },
     },
   });
@@ -70,7 +70,7 @@ export async function getSession(id: number) {
     include: {
       trades: {
         orderBy: { time: "asc" },
-        include: { mistakes: true, checklist: true },
+        include: { mistakes: true, checklist: true, account: { select: { name: true } } },
       },
     },
   });
@@ -115,7 +115,7 @@ export async function getTodaySession() {
       is_closed: false,
     },
     include: {
-      trades: { include: { mistakes: true, checklist: true } },
+      trades: { include: { mistakes: true, checklist: true, account: { select: { name: true } } } },
     },
     orderBy: { created_at: "desc" },
   });
@@ -188,7 +188,7 @@ export async function getDashboardStats() {
     take: 30,
     include: {
       trades: {
-        include: { mistakes: true, checklist: true },
+        include: { mistakes: true, checklist: true, account: { select: { name: true } } },
       },
     },
   });

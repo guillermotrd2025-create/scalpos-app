@@ -103,9 +103,8 @@ export async function getNextAccountToUse() {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
-    // Get the very last trade of the day to see which account was used
+    // Get the very last trade ever to see which account was used
     const lastTrade = await prisma.trade.findFirst({
-      where: { time: { gte: startOfDay } },
       orderBy: { time: 'desc' },
       select: { account_id: true }
     });

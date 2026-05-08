@@ -170,7 +170,14 @@ export default function TradeDetailModal({
               {trade.direction}
             </span>
             <div>
-              <p className="font-semibold text-sm">{trade.setup_type}</p>
+              <p className="font-semibold text-sm flex items-center gap-2">
+                {trade.setup_type}
+                {trade.account?.name && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-400 font-normal">
+                    {trade.account.name}
+                  </span>
+                )}
+              </p>
               <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
                 {formatTime(trade.time)}
                 {trade.rr_planned ? ` · ${Number(trade.rr_planned).toFixed(2)}R planeado` : ""}

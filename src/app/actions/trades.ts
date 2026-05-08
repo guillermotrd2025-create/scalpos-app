@@ -135,6 +135,7 @@ export async function getTrades(filters?: {
       session: { select: { date: true, is_closed: true } },
       checklist: true,
       mistakes: true,
+      account: { select: { name: true } },
     },
   });
 }

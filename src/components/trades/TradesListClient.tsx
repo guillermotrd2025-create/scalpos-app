@@ -115,7 +115,14 @@ export default function TradesListClient({
                       </span>
                     </td>
                     <td className="px-4 py-3 font-medium whitespace-nowrap" style={{ color: "var(--text-primary)" }}>
-                      {t.setup_type}
+                      <div className="flex flex-col gap-1">
+                        <span>{t.setup_type}</span>
+                        {t.account?.name && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800/40 text-zinc-400 w-fit">
+                            {t.account.name}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3 font-mono text-xs" style={{ color: "var(--text-secondary)" }}>
                       {t.sl_price ?? "—"}:{t.tp_price ?? "—"}

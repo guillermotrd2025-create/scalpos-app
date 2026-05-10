@@ -134,3 +134,70 @@ export const PSYCHOTRADING_QUOTES = [
     author: "Psicología del Trading",
   },
 ] as const;
+
+// ============================================================
+// DISCIPLINE XP — Gamification Constants
+// ============================================================
+
+// Levels with progressive XP requirements
+export const DISCIPLINE_LEVELS = [
+  { level: 1, xp_required: 0,    name: "Novato",       emoji: "🌱" },
+  { level: 2, xp_required: 50,   name: "Aprendiz",     emoji: "📘" },
+  { level: 3, xp_required: 150,  name: "Disciplinado", emoji: "🎯" },
+  { level: 4, xp_required: 350,  name: "Consistente",  emoji: "⚡" },
+  { level: 5, xp_required: 600,  name: "Veterano",     emoji: "🛡️" },
+  { level: 6, xp_required: 1000, name: "Maestro",      emoji: "💎" },
+  { level: 7, xp_required: 1500, name: "Élite",        emoji: "🏆" },
+  { level: 8, xp_required: 2500, name: "Leyenda",      emoji: "👑" },
+] as const;
+
+// XP values for different actions
+export const XP_VALUES = {
+  TRADE_IN_PLAN: 10,        // Base XP per in-plan trade
+  REST_DAY: 5,              // Smart rest day
+  EXECUTION_BONUS: 3,       // Bonus for execution_score >= 8
+  CLEAN_TRADE_BONUS: 2,     // Bonus for 0 mistakes
+} as const;
+
+// Streak multiplier tiers
+export const STREAK_MULTIPLIERS = [
+  { min: 0,  max: 4,   multiplier: 1.0, label: "Base" },
+  { min: 5,  max: 14,  multiplier: 1.5, label: "🔥 En racha" },
+  { min: 15, max: 29,  multiplier: 2.0, label: "💎 Máquina" },
+  { min: 30, max: 9999, multiplier: 2.5, label: "👑 Leyenda" },
+] as const;
+
+// Motivational messages by streak range
+export const STREAK_MESSAGES = [
+  { min: 0,  max: 0,   message: "Empieza hoy. Un trade a la vez." },
+  { min: 1,  max: 4,   message: "Buen arranque. No te confíes." },
+  { min: 5,  max: 9,   message: "🔥 Estás construyendo un hábito. Sigue." },
+  { min: 10, max: 14,  message: "🔥 Doble dígito. Estás en otro nivel." },
+  { min: 15, max: 24,  message: "💎 Más de 15 trades sin salirte del plan. Eres otro trader." },
+  { min: 25, max: 49,  message: "💎 Racha brutal. El plan es tu ventaja." },
+  { min: 50, max: 99,  message: "👑 50+ trades. Disciplina de élite." },
+  { min: 100, max: 9999, message: "⚔️ Eres la ley del mercado." },
+] as const;
+
+// Badge definitions with unlock conditions
+export const BADGE_DEFINITIONS = [
+  { key: "FIRST_BLOOD",    emoji: "🩸", name: "Primera Sangre",      description: "Primer trade en plan registrado" },
+  { key: "PERFECT_WEEK",   emoji: "⭐", name: "Semana Perfecta",     description: "5 días operativos seguidos, todos trades en plan" },
+  { key: "STREAK_10",      emoji: "🔥", name: "Racha de 10",         description: "10 trades consecutivos en plan" },
+  { key: "STREAK_25",      emoji: "💎", name: "Racha de 25",         description: "25 trades consecutivos en plan" },
+  { key: "STREAK_50",      emoji: "👑", name: "Racha de 50",         description: "50 trades consecutivos en plan" },
+  { key: "SMART_REST",     emoji: "🧘", name: "Descanso Inteligente", description: "Primer día de descanso registrado" },
+  { key: "WISE_WEEK",      emoji: "🦉", name: "Semana del Sabio",    description: "3+ días de descanso inteligente en un mes" },
+  { key: "UNBREAKABLE",    emoji: "🛡️", name: "Inquebrantable",      description: "Subir de nivel sin ningún trade fuera de plan" },
+  { key: "MONTHLY_DISC",   emoji: "📅", name: "Mes Disciplinado",    description: "20 días operativos en un mes, ≥90% trades en plan" },
+  { key: "PLAN_IS_LAW",    emoji: "⚔️", name: "El Plan es la Ley",   description: "100 trades consecutivos en plan" },
+] as const;
+
+// Predefined smart rest day reasons
+export const REST_DAY_REASONS = [
+  { value: "CHOPPY",    emoji: "🌊", label: "Mercado choppy / sin estructura" },
+  { value: "NEWS",      emoji: "📰", label: "Noticias macro de alto impacto" },
+  { value: "EMOTIONAL", emoji: "🧠", label: "Estado emocional inadecuado" },
+  { value: "SCHEDULE",  emoji: "⏰", label: "Fuera de horario / sin tiempo" },
+  { value: "OTHER",     emoji: "📝", label: "Otro motivo" },
+] as const;

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createTrade, createDodgedBullet } from "@/app/actions/trades";
 import { createSession } from "@/app/actions/sessions";
 import { getNextAccountToUse } from "@/app/actions/accounts";
+import { awardTradeXP } from "@/app/actions/challenges";
 import {
   SETUP_TYPES, MISTAKE_TYPES,
   RED_FLAG_FIELDS, GREEN_FLAG_FIELDS,
@@ -134,11 +135,23 @@ function CooldownModal({
   pnl,
   executionScore,
   sessionId,
+  xpResult,
   onDone,
 }: {
   pnl: number;
   executionScore: number;
   sessionId: number;
+  xpResult?: {
+    xpAwarded: number;
+    newStreak: number;
+    streakBroken: boolean;
+    previousStreak: number;
+    newLevel: number;
+    leveledUp: boolean;
+    multiplier: number;
+    totalXp: number;
+    newBadges: string[];
+  } | null;
   onDone: () => void;
 }) {
   const router = useRouter();
@@ -215,6 +228,50 @@ function CooldownModal({
           </blockquote>
           <p className="text-xs mt-2 text-right" style={{ color: "var(--text-muted)" }}>— {quote.author}</p>
         </div>
+
+        {/* XP Feedback */}
+        {xpResult && (
+          <div
+            className="rounded-xl p-4"
+            style={{
+              background: xpResult.streakBroken ? "rgba(239,68,68,0.08)" : "rgba(99,102,241,0.08)",
+              border: `1px solid ${xpResult.streakBroken ? "rgba(239,68,68,0.25)" : "rgba(99,102,241,0.25)"}`,
+            }}
+          >
+            {xpResult.streakBroken ? (
+              <>
+                <p className="text-sm font-bold mb-1" style={{ color: "var(--red)" }}>
+                  Racha rota ({xpResult.previousStreak} trades)
+                </p>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                  Está bien. No dejes que un error defina el resto del día. El próximo trade puede ser perfecto. Tu XP sigue intacto: <strong style={{ color: "var(--brand)" }}>{xpResult.totalXp} XP</strong>.
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-sm font-bold" style={{ color: "var(--brand)" }}>
+                    🔥 Racha: {xpResult.newStreak} trades
+                  </p>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-lg"
+                    style={{ background: "rgba(99,102,241,0.15)", color: "var(--brand)" }}>
+                    +{xpResult.xpAwarded} XP{xpResult.multiplier > 1 ? ` (×${xpResult.multiplier})` : ""}
+                  </span>
+                </div>
+                {xpResult.leveledUp && (
+                  <p className="text-xs font-semibold mt-1" style={{ color: "var(--amber)" }}>
+                    🎉 ¡Subiste al Nivel {xpResult.newLevel}!
+                  </p>
+                )}
+                {xpResult.newBadges.length > 0 && (
+                  <p className="text-xs font-semibold mt-1" style={{ color: "var(--amber)" }}>
+                    🏅 Insignia desbloqueada: {xpResult.newBadges.join(", ")}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        )}
 
         {/* Account Change Warning */}
         <div
@@ -503,7 +560,7 @@ export default function NewTradeForm({
   const [showModal, setShowModal] = useState(false);
   const [showCooldownModal, setShowCooldownModal] = useState(false);
   const [showPlanModal, setShowPlanModal] = useState(false);
-  const [savedTradeData, setSavedTradeData] = useState<{ pnl: number; score: number; sessionId: number } | null>(null);
+  const [savedTradeData, setSavedTradeData] = useState<{ pnl: number; score: number; sessionId: number; xpResult?: any } | null>(null);
   const [checklist, setChecklist] = useState<ChecklistState>(DEFAULT_CHECKLIST);
 
   const [accountInfo, setAccountInfo] = useState<{ account_id: number; name: string; maxRiskAmount: number } | null>(null);
@@ -723,9 +780,22 @@ export default function NewTradeForm({
         mistakes: mistakeObjects,
       });
 
+      // Award XP
+      let xpResult = null;
+      try {
+        xpResult = await awardTradeXP({
+          isInPlan: inPlanValue,
+          executionScore,
+          mistakeCount: mistakeObjects.length,
+        });
+      } catch (e) {
+        // XP system failure shouldn't block trade saving
+        console.error("XP award error:", e);
+      }
+
       setForm((f) => ({ ...f, is_in_plan: inPlanValue }));
       toast("Trade completado y guardado correctamente.", "success");
-      setSavedTradeData({ pnl: parseFloat(form.result_pnl), score: executionScore, sessionId });
+      setSavedTradeData({ pnl: parseFloat(form.result_pnl), score: executionScore, sessionId, xpResult });
       setShowCooldownModal(true);
     } catch (e: any) {
       toast("Error guardando el trade: " + e.message, "error");
@@ -759,6 +829,7 @@ export default function NewTradeForm({
           pnl={savedTradeData.pnl}
           executionScore={savedTradeData.score}
           sessionId={savedTradeData.sessionId}
+          xpResult={savedTradeData.xpResult}
           onDone={() => setShowCooldownModal(false)}
         />
       )}

@@ -1,12 +1,14 @@
 export const dynamic = "force-dynamic";
 import { getDashboardStats, getTodaySession } from "@/app/actions/sessions";
 import { getTrades } from "@/app/actions/trades";
+import { getProfile, getWeeklySummary } from "@/app/actions/challenges";
 import {
   DisciplinePnlChart,
   CumulativePnlChart,
   MistakeFrequencyChart,
   DisciplineGauge,
 } from "@/components/dashboard/Charts";
+import ChallengeWidget from "@/components/challenge/ChallengeWidget";
 import Link from "next/link";
 import {
   TrendingUp, TrendingDown, Target, AlertTriangle,
@@ -16,10 +18,12 @@ import { formatPnl, getDisciplineColor, getDisciplineLabel, formatDate, formatTi
 import { MISTAKE_TYPES, EMOTIONS_PRE, EMOTIONS_DURING, EMOTIONS_POST } from "@/lib/constants";
 
 export default async function DashboardPage() {
-  const [stats, todaySession, recentTrades] = await Promise.all([
+  const [stats, todaySession, recentTrades, xpProfile, weeklySummary] = await Promise.all([
     getDashboardStats(),
     getTodaySession(),
     getTrades({ limit: 10 }),
+    getProfile(),
+    getWeeklySummary(),
   ]);
 
   const allTrades = stats.sessions.flatMap((s: any) => s.trades);
@@ -91,6 +95,12 @@ export default async function DashboardPage() {
           icon={<AlertTriangle size={18} />}
         />
       </div>
+
+      {/* ── Discipline XP Widget ── */}
+      <ChallengeWidget
+        profile={JSON.parse(JSON.stringify(xpProfile))}
+        weekDays={JSON.parse(JSON.stringify(weeklySummary.days))}
+      />
 
       {/* ── Charts row ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

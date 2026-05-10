@@ -8,16 +8,18 @@ import {
   BookOpen,
   Activity,
   ChevronRight,
-  Settings
+  Settings,
+  Trophy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/",           label: "Dashboard",    icon: LayoutDashboard },
-  { href: "/sessions",   label: "Sesiones",     icon: Activity },
-  { href: "/trades/new", label: "Nuevo Trade",  icon: TrendingUp, accent: true },
-  { href: "/trades",     label: "Mis Trades",   icon: BookOpen },
-  { href: "/settings",   label: "Configuración", icon: Settings },
+  { href: "/",           label: "Dashboard",      icon: LayoutDashboard },
+  { href: "/sessions",   label: "Sesiones",       icon: Activity },
+  { href: "/trades/new", label: "Nuevo Trade",    icon: TrendingUp, accent: true },
+  { href: "/trades",     label: "Mis Trades",     icon: BookOpen },
+  { href: "/challenge",  label: "Disciplina XP",  icon: Trophy },
+  { href: "/settings",   label: "Configuración",  icon: Settings },
 ];
 
 export default function Sidebar() {

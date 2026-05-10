@@ -214,3 +214,47 @@ model GlobalSettings {
 
   updated_at            DateTime @updatedAt
 }
+
+// ============================================================
+// DISCIPLINE PROFILE: XP, Levels & Streak tracking (singleton)
+// ============================================================
+model DisciplineProfile {
+  id              Int      @id @default(1)
+  total_xp        Int      @default(0)
+  current_level   Int      @default(1)
+  current_streak  Int      @default(0)
+  best_streak     Int      @default(0)
+  updated_at      DateTime @updatedAt
+
+  badges          Badge[]
+  rest_days       RestDay[]
+}
+
+// ============================================================
+// BADGE: Unlockable discipline achievements
+// ============================================================
+model Badge {
+  id              Int       @id @default(autoincrement())
+  profile_id      Int
+  badge_key       String    // e.g. "STREAK_10", "PERFECT_WEEK"
+  unlocked_at     DateTime  @default(now())
+
+  profile         DisciplineProfile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  @@unique([profile_id, badge_key])
+}
+
+// ============================================================
+// REST DAY: Smart rest day tracking with reason
+// ============================================================
+model RestDay {
+  id              Int       @id @default(autoincrement())
+  profile_id      Int
+  date            DateTime  @db.Date
+  reason          String
+  created_at      DateTime  @default(now())
+
+  profile         DisciplineProfile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  @@unique([profile_id, date])
+}

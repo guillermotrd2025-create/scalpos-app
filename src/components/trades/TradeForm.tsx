@@ -265,6 +265,48 @@ function CooldownModal({
   );
 }
 
+// ── Plan Modal ───────────────────────────────────────────────
+function PlanModal({
+  onSelect,
+  onClose
+}: {
+  onSelect: (inPlan: boolean) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="modal-overlay animate-fade-in" style={{ zIndex: 300 }}>
+      <div className="modal-box animate-scale-in" style={{ maxWidth: 420, padding: "2.5rem 2rem" }}>
+        <div className="text-center mb-6">
+          <div className="text-5xl mb-4">📋</div>
+          <h2 className="text-xl font-bold tracking-tight mb-2">¿Estaba este trade en tu plan de sesión?</h2>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            Sé honesto contigo mismo. Un trade ganador fuera de plan es un error que refuerza malos hábitos.
+          </p>
+        </div>
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => onSelect(true)}
+            className="btn py-4 flex items-center justify-center gap-2 font-bold transition-all hover:scale-[1.02]"
+            style={{ background: "rgba(34,197,94,0.15)", color: "var(--green)", border: "1px solid rgba(34,197,94,0.3)" }}
+          >
+            <CheckCircle2 size={18} /> Sí, estaba en mi plan
+          </button>
+          <button
+            onClick={() => onSelect(false)}
+            className="btn py-4 flex items-center justify-center gap-2 font-bold transition-all hover:scale-[1.02]"
+            style={{ background: "rgba(239,68,68,0.15)", color: "var(--red)", border: "1px solid rgba(239,68,68,0.3)" }}
+          >
+            <XCircle size={18} /> No, operé fuera de plan
+          </button>
+        </div>
+        <button onClick={onClose} className="btn btn-ghost w-full mt-4 text-xs font-medium">
+          Volver al registro
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Drag-Drop Upload Zone ─────────────────────────────────────
 function UploadZone({
   label,
@@ -460,6 +502,7 @@ export default function NewTradeForm({
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showCooldownModal, setShowCooldownModal] = useState(false);
+  const [showPlanModal, setShowPlanModal] = useState(false);
   const [savedTradeData, setSavedTradeData] = useState<{ pnl: number; score: number; sessionId: number } | null>(null);
   const [checklist, setChecklist] = useState<ChecklistState>(DEFAULT_CHECKLIST);
 
@@ -507,7 +550,7 @@ export default function NewTradeForm({
     direction: "LONG",
     setup_type: SETUP_TYPES[0] as string,
     result_pnl: "",
-    is_in_plan: true,
+    is_in_plan: null as boolean | null,
     notes: "",
     screenshot_pre: null as string | null,
     screenshot_post: null as string | null,
@@ -615,7 +658,16 @@ export default function NewTradeForm({
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSaveClick = () => {
+    if (!form.result_pnl || !accountInfo) return;
+    if (form.is_in_plan === null) {
+      setShowPlanModal(true);
+    } else {
+      executeSubmit(form.is_in_plan);
+    }
+  };
+
+  const executeSubmit = async (inPlanValue: boolean) => {
     if (!form.result_pnl || !accountInfo) return;
 
     setLoading(true);
@@ -660,7 +712,7 @@ export default function NewTradeForm({
         sl_price: parseFloat(form.sl_points) || undefined,
         tp_price: parseFloat(form.tp_points) || undefined,
         result_pnl: parseFloat(form.result_pnl),
-        is_in_plan: form.is_in_plan,
+        is_in_plan: inPlanValue,
         notes: form.notes,
         screenshot_pre: form.screenshot_pre ?? undefined,
         screenshot_post: form.screenshot_post ?? undefined,
@@ -671,6 +723,7 @@ export default function NewTradeForm({
         mistakes: mistakeObjects,
       });
 
+      setForm((f) => ({ ...f, is_in_plan: inPlanValue }));
       toast("Trade completado y guardado correctamente.", "success");
       setSavedTradeData({ pnl: parseFloat(form.result_pnl), score: executionScore, sessionId });
       setShowCooldownModal(true);
@@ -707,6 +760,16 @@ export default function NewTradeForm({
           executionScore={savedTradeData.score}
           sessionId={savedTradeData.sessionId}
           onDone={() => setShowCooldownModal(false)}
+        />
+      )}
+
+      {showPlanModal && (
+        <PlanModal
+          onSelect={(val) => {
+            setShowPlanModal(false);
+            executeSubmit(val);
+          }}
+          onClose={() => setShowPlanModal(false)}
         />
       )}
 
@@ -1018,21 +1081,7 @@ export default function NewTradeForm({
                   </div>
                 </div>
 
-                {/* In-plan toggle */}
-                <label className="flex items-center gap-3 cursor-pointer select-none pt-1">
-                  <div
-                    onClick={() => setForm((f) => ({ ...f, is_in_plan: !f.is_in_plan }))}
-                    className="w-10 h-5 rounded-full transition-colors relative shrink-0"
-                    style={{ background: form.is_in_plan ? "var(--green)" : "var(--bg-muted)" }}
-                  >
-                    <div className="absolute w-3.5 h-3.5 bg-white rounded-full transition-all"
-                      style={{ left: form.is_in_plan ? "calc(100% - 18px)" : "3px", top: "3px" }} />
-                  </div>
-                  <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
-                    Trade dentro del plan de sesión
-                  </span>
-                </label>
-              </div>
+                </div>
             </div>
 
             {/* Screenshot pre */}
@@ -1102,7 +1151,7 @@ export default function NewTradeForm({
               <div>
                 <p className="text-sm font-semibold">{form.setup_type}</p>
                 <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                  {computedRR}R · {form.is_in_plan ? "En el plan" : "Fuera del plan"}
+                  {computedRR}R · {form.is_in_plan === null ? "Plan sin especificar" : (form.is_in_plan ? "En el plan" : "Fuera del plan")}
                 </p>
               </div>
             </div>
@@ -1208,7 +1257,7 @@ export default function NewTradeForm({
               </button>
               <button
                 id="btn-save-trade"
-                onClick={handleSubmit}
+                onClick={handleSaveClick}
                 disabled={!form.result_pnl || loading}
                 className="btn btn-primary flex-1 py-4 font-bold text-base disabled:opacity-50 disabled:cursor-not-allowed"
               >
